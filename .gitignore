@@ -1,2 +1,11 @@
+# Sub-repos — inke changes yahan track/push nahi honge
 fb_agent/
 fb_dash/
+
+# Common ignores
+.env
+*.pyc
+__pycache__/
+node_modules/
+.DS_Store
+Thumbs.db
