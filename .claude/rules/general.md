@@ -12,6 +12,11 @@
 - `.env` aur secret files kabhi mat chhuao
 - Git history preserve karo
 
+## 🚀 Git & Memory Rules
+
+- **Code update ke baad GitHub push karna zaroori hai** — har code change ke baad relevant repo (`fb_agent` ya `fb_dash`) mein commit karke `git push origin main` karo. Push kiye bina kaam complete nahi maana jayega.
+- **GitHub push ke baad memory update karo** — agar push mein koi naya feature, bug fix, ya architecture change hai toh `.claude/memory/` ki relevant file update karo taake future sessions mein context accurate rahe.
+
 ## 🚫 Prohibited Actions (Bina Poocha Nahi Karna)
 
 - Database schema change karna
