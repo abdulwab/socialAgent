@@ -15,3 +15,4 @@
 - [AI Providers](ai-providers.md) — Gemini, Claude, OpenRouter — selection logic aur per-user config
 - [Dev Workflow](dev-workflow.md) — Frontend/backend kaise run karein, env vars, migrations
 - [Deployment](deployment.md) — Vercel (frontend), Railway (backend), CORS, environment secrets
+- [UI Changelog](ui-changelog.md) — Sidebar rename, Social Channels redesign, channel-status API
