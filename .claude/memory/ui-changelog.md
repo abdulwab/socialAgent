@@ -1,17 +1,60 @@
 ---
 name: ui-changelog
-description: UI changes made to SocialHub — sidebar branding, Social Channels page redesign, channel-status API, Coming Soon section
+description: UI changes made to SocialHub — sidebar naming fixes, Overview page, overview-stats API, Social Channels redesign, channel-status API
 metadata:
   type: project
 ---
 
 # UI Changelog
 
-## Sidebar (fb_dash/app/components/Sidebar.tsx)
+## Step 01 — Sidebar Naming Fixes (fb_dash/app/components/Sidebar.tsx)
+
+- **"Dashboard"** → **"Overview"** — route changed `/scheduled-posts` → `/overview`, icon `LayoutDashboard`
+- **"Scheduled Posts"** → **"Post Queue"** — route stays `/scheduled-posts`, icon changed to `Layers`
+- **"Scheduled Posts" (creation form)** → **"New Post"** — route stays `/posts`, icon changed to `PlusSquare`
+- Calendar unchanged
+- `CalendarClock` import removed, `Layers` + `PlusSquare` added
+
+**posts/page.tsx:**
+- `<h1>Posts</h1>` → `<h1>New Post</h1>`
+- Subtext updated
+- "Go to Dashboard" link → "Go to Home"
+
+**Why:** Old naming was confusing — post creation form was called "Scheduled Posts", stats list was called "Dashboard". Fixed to match actual function.
+
+## Step 02 — Overview Stats Endpoint (fb_agent/app/api/v1/user_routes.py)
+
+- **New endpoint**: `GET /api/v1/user/overview-stats`
+- **Returns**: `published_today`, `scheduled_this_week`, `failed_posts`, `total_published`, `upcoming_posts` (next 5), `greeting_name`
+- **Datetime**: Uses `datetime.utcnow()` (naive) — DB columns are timezone-naive, NOT `datetime.now(timezone.utc)`
+- **Status values used**: `"published"`, `"pending"` (not "scheduled"), `"failed"`
+- **Field names**: `scheduled_time` (not `scheduled_at`), `published_at`
+
+## Step 03 — Overview Page Frontend (fb_dash/app/overview/page.tsx)
+
+- **New page**: `/overview` route — stats dashboard replacing old confusing "Dashboard"
+- **Stats cards**: Published Today (green), Scheduled This Week (blue), Failed Posts (red + link to queue), Total Published (purple)
+- **Upcoming Posts**: Next 5 pending posts with platform icon, time, content preview
+- **Quick Actions**: New Post, View Queue, Open Calendar buttons
+- **Redux**: `fetchOverviewStats` thunk dispatched on mount (auth-gated)
+- **Empty state**: "No upcoming posts" with link to create
+
+**agentSlice.ts additions:**
+- Interfaces: `UpcomingPost`, `OverviewStats`
+- State: `overviewStats: OverviewStats | null`, `overviewLoading: boolean`
+- Thunk: `fetchOverviewStats` — calls `ApiManager.getOverviewStats(token)`
+- Reducers: pending/fulfilled/rejected cases
+
+**apiManager.ts additions:**
+- `getOverviewStats(token)` → `GET /user/overview-stats`
+
+---
+
+## Previous — Sidebar Branding (fb_dash/app/components/Sidebar.tsx)
 
 - **Brand renamed**: "FB Agent" → "SocialHub", icon `Bot` → `Globe`
 - **Nav item renamed**: "Connect Apps" → "Social Channels" (route `/connect-apps` same hai)
-- **Grouped navigation**: MANAGE (Dashboard, Calendar, Scheduled Posts) / INSIGHTS (Analytics) / SETTINGS (Social Channels, Prompt Settings, Privacy Policy)
+- **Grouped navigation**: MANAGE / INSIGHTS / SETTINGS groups
 - **Quick button**: "+ New Post" orange button sidebar top mein, `/posts` par redirect karta hai
 
 ## Social Channels Page (fb_dash/app/connect-apps/page.tsx)

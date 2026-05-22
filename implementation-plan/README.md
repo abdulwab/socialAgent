@@ -9,9 +9,9 @@
 
 | Step | Task | Phase | Effort | Status |
 |------|------|-------|--------|--------|
-| [01](step-01-sidebar-naming-fixes.md) | Sidebar Naming Fixes | 1 | Low | ⬜ |
-| [02](step-02-overview-backend.md) | Overview Page — Backend Endpoint | 1 | Medium | ⬜ |
-| [03](step-03-overview-frontend.md) | Overview Page — Frontend UI | 1 | Medium | ⬜ |
+| [01](step-01-sidebar-naming-fixes.md) | Sidebar Naming Fixes | 1 | Low | ✅ |
+| [02](step-02-overview-backend.md) | Overview Page — Backend Endpoint | 1 | Medium | ✅ |
+| [03](step-03-overview-frontend.md) | Overview Page — Frontend UI | 1 | Medium | ✅ |
 | [04](step-04-failed-post-retry.md) | Failed Post Retry Button | 1 | Low | ⬜ |
 | [05](step-05-token-expiry-banner.md) | Token Expiry Alert Banner | 1 | Low | ⬜ |
 | [06](step-06-landing-page-redesign.md) | Landing Page Redesign | 1 | Medium | ⬜ |
