@@ -200,3 +200,43 @@ GEMINI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY
 - `requirements.txt` ya `package.json` dependencies change karna
 - OAuth redirect URIs ya CORS origins modify karna
 - Production deployment trigger karna
+---
+
+## Developer Profile
+
+- **Name**: Mutahier Shahzad
+- **Language**: Urdu + English mix mein baat karta hoon — isi style mein respond karo
+- **Experience Level**: [Junior / Mid / Senior]
+- **Main Focus**: Frontend (Next.js) / Backend (FastAPI) / Full Stack
+
+---
+
+## My Working Preferences
+
+- Pehle **problem explain karo**, phir code do
+- Code mein **Roman Urdu comments** daal do jahan helpful ho
+- Breaking changes se pehle **hamesha confirm karo**
+- Choti fixes ke liye **seedha code do**, lamba explanation mat karo
+- Agar kuch unclear ho toh **pehle pucho**, assume mat karo
+
+---
+
+## Current Active Work
+
+- [ ] Jo abhi build/fix kar rahe ho yahan likho
+- [ ] Example: Bets board feature add karna
+- [ ] Example: Analytics page fix
+
+---
+
+## Known Issues / Tech Debt
+
+- Abhi koi formal test suite nahi hai
+- [Koi aur known bugs yahan add karo]
+
+---
+
+## Session Memory Hints
+
+- Har naye kaam ki start mein mujhe batao: "Main [X] par kaam karna chahta hoon"
+- Main context CLAUDE.md se automatically utha lunga
