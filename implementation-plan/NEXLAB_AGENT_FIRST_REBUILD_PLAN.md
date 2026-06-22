@@ -579,37 +579,267 @@ Main Agent / orchestrator ka flow:
 6. Safety And Review Agent se final validation karwaye.
 7. User ko sirf clean final reply, drafts, images, previews, and confirmation buttons show kare.
 
+### Agent Trigger Matrix
+
+Main Agent user command ko classify karega. One command multiple hidden agents trigger kar sakta hai.
+
+| User input / intent | Primary hidden agent | Supporting hidden agents | Example |
+|---|---|---|---|
+| connect, reconnect, disconnect, app status | Connection Agent | Safety And Review Agent for disconnect confirmation | "LinkedIn connect karo" |
+| post ideas, content calendar, campaign plan | Content Strategy Agent | Web Search Agent when latest/trending info is needed | "AI niche ke liye 1 week plan banao" |
+| write, caption, hashtags, rewrite, improve | Copywriting Agent | Safety And Review Agent for quality checks | "LinkedIn post likho" |
+| image, visual, generate image, ad creative | Image Generation Agent | Media Agent to save/attach asset | "Is post ke liye image banao" |
+| upload image, attach media, media library | Media Agent | Safety And Review Agent for file checks | "Meri latest image attach karo" |
+| schedule, queue, calendar, time, recurring | Scheduling Agent | Safety And Review Agent before DB write | "Friday 9 AM schedule karo" |
+| CSV, bulk upload, many posts from file | Scheduling Agent | Safety And Review Agent + Media Agent if files included | "Ye CSV upload kar ke schedule karo" |
+| publish now, retry failed, failed posts | Publishing Agent | Safety And Review Agent before publish/retry | "Ye post abhi publish karo" |
+| analytics, performance, best time, growth | Analytics Agent | Web Search Agent only if market context requested | "Last 30 days ki analytics batao" |
+| autopilot, automatic posting, recurring AI | Autopilot Agent | Content Strategy + Scheduling + Safety | "Autopilot setup karo" |
+| latest, current, news, trends, competitor, research | Web Search Agent | Content Strategy or Copywriting Agent | "Latest AI trends se 5 posts banao" |
+| risky action, delete, disconnect, publish, schedule | Safety And Review Agent | relevant action agent after confirmation | "Sab failed posts delete karo" |
+
+### Multi-Agent Trigger Examples
+
+Example 1:
+
+```txt
+User: AI marketing ke liye 5 LinkedIn posts banao aur Friday se schedule karo.
+```
+
+Hidden flow:
+
+1. Main Agent detects content + scheduling intent.
+2. Content Strategy Agent creates post angles.
+3. Copywriting Agent writes 5 LinkedIn drafts.
+4. Scheduling Agent prepares schedule preview.
+5. Safety And Review Agent checks duplicates, connection, time, and hashtag limits.
+6. Main Agent shows drafts + schedule confirmation.
+
+Example 2:
+
+```txt
+User: Latest AI marketing trends dhoond kar posts banao.
+```
+
+Hidden flow:
+
+1. Main Agent detects latest/research intent.
+2. Web Search Agent fetches sources.
+3. Content Strategy Agent converts research into angles.
+4. Copywriting Agent writes posts.
+5. Safety And Review Agent checks output.
+6. Main Agent shows final drafts with optional source summary.
+
+Example 3:
+
+```txt
+User: Ye CSV upload kar ke posts schedule karo.
+```
+
+Hidden flow:
+
+1. Main Agent detects CSV file.
+2. Scheduling Agent parses rows.
+3. Safety And Review Agent validates each row.
+4. Main Agent shows preview and warnings.
+5. User confirms.
+6. Scheduling Agent creates scheduled posts.
+
+### Agent-To-Agent Communication
+
+Agents direct UI se baat nahi karenge. All communication Main Agent/orchestrator ke through hoga.
+
+Allowed communication pattern:
+
+```txt
+User -> Main Agent -> Agent A -> Main Agent -> Agent B -> Main Agent -> User
+```
+
+Avoid:
+
+```txt
+Agent A -> Agent B direct uncontrolled call
+```
+
+Reason:
+
+- Main Agent context owner rahega.
+- Safety checks centralized rahenge.
+- Debugging easier hogi.
+- User ko one consistent assistant experience milega.
+
+### Agent Message Envelope
+
+Main Agent har hidden agent ko structured JSON envelope dega:
+
+```json
+{
+  "request_id": "cmd_20260622_001",
+  "user_id": 123,
+  "intent": "schedule_posts",
+  "command": "AI marketing ke liye 5 LinkedIn posts banao aur Friday se schedule karo",
+  "input_mode": "text",
+  "context": {
+    "timezone": "Asia/Karachi",
+    "connected_apps": {
+      "linkedin": { "connected": true, "account_id": "li_123" }
+    },
+    "drafts": [],
+    "uploaded_files": [],
+    "preferences": {
+      "tone": "professional",
+      "language": "roman_urdu_english"
+    }
+  },
+  "constraints": {
+    "user_visible_subagents": false,
+    "requires_confirmation_for_mutations": true,
+    "do_not_include_secrets": true
+  }
+}
+```
+
+Hidden agent response format:
+
+```json
+{
+  "request_id": "cmd_20260622_001",
+  "agent_key": "scheduling",
+  "status": "completed",
+  "internal_summary": "Prepared schedule preview for 5 LinkedIn posts",
+  "user_visible_result": {
+    "schedule_preview": {
+      "platform": "linkedin",
+      "items": []
+    }
+  },
+  "next_recommended_agent": "safety_review",
+  "requires_confirmation": true,
+  "errors": []
+}
+```
+
+Main Agent final frontend response:
+
+```json
+{
+  "reply": "5 LinkedIn posts ready hain. Friday se 9:00 AM schedule karne ke liye confirmation chahiye.",
+  "artifacts": {
+    "drafts": [],
+    "images": [],
+    "schedule_preview": {}
+  },
+  "progress_label": "Ready for confirmation",
+  "requires_confirmation": true,
+  "confirmation": {
+    "label": "Schedule posts",
+    "action": "schedule_posts",
+    "payload_ref": "cmd_20260622_001"
+  }
+}
+```
+
+### Shared Data Forms
+
+Agents data in common forms exchange karenge:
+
+Draft post:
+
+```json
+{
+  "draft_id": "draft_001",
+  "platform": "linkedin",
+  "content": "Final post text here",
+  "hashtags": ["#AI", "#Marketing"],
+  "image_url": null,
+  "status": "draft"
+}
+```
+
+Generated image:
+
+```json
+{
+  "asset_id": "img_001",
+  "prompt": "professional AI marketing visual",
+  "url": "https://res.cloudinary.com/...",
+  "public_id": "socialhub/ai_generated/...",
+  "attached_to_draft_id": "draft_001"
+}
+```
+
+Schedule preview:
+
+```json
+{
+  "schedule_id": "preview_001",
+  "timezone": "Asia/Karachi",
+  "items": [
+    {
+      "draft_id": "draft_001",
+      "platform": "linkedin",
+      "scheduled_at": "2026-06-26T09:00:00+05:00"
+    }
+  ],
+  "requires_confirmation": true
+}
+```
+
+Safety result:
+
+```json
+{
+  "passed": true,
+  "warnings": [],
+  "blocking_errors": [],
+  "confirmation_required": true
+}
+```
+
 ### LLM Provider Strategy
 
-Existing backend already these providers support karta hai:
+Final product mein all agents ke liye **OpenRouter** use hoga.
 
-- Gemini via `GEMINI_API_KEY`
-- Claude via `ANTHROPIC_API_KEY`
-- OpenRouter via `OPENROUTER_API_KEY`
+The API key will be managed internally by NexLab/SocialHub only:
+
+- `OPENROUTER_API_KEY` backend environment variable mein rahegi.
+- User ko API key add karne ka option nahi milega.
+- User ko API key settings, provider settings, ya model selector UI mein nazar nahi aayega.
+- Existing user-facing AI provider settings must be removed or hidden from the final agent-first UI.
+
+Existing backend currently Gemini, Claude, and OpenRouter support karta hai, but agent-first rebuild ka target policy OpenRouter-only hoga.
 
 Recommended rule:
 
+- Provider hard-code as OpenRouter for agent workflows.
 - Model IDs hard-code na karo.
-- Provider and model per environment/config se control hon.
-- User settings se provider select ho sakta hai, lekin system-level agents ke liye safe defaults rakho.
+- Model names backend environment/config se control hon.
+- User settings se provider select nahi hoga.
+- Fallback models bhi internal config se control hon.
 
-Add config options later:
+Add config options:
 
 ```txt
-DEFAULT_AGENT_PROVIDER=gemini
-MAIN_AGENT_PROVIDER=claude
-FAST_AGENT_PROVIDER=gemini
-RESEARCH_AGENT_PROVIDER=claude
-COPY_AGENT_PROVIDER=gemini
-IMAGE_PROMPT_AGENT_PROVIDER=gemini
+OPENROUTER_API_KEY=...
+AGENT_LLM_PROVIDER=openrouter
+MAIN_AGENT_MODEL=openai/gpt-4.1
+FAST_AGENT_MODEL=google/gemini-2.0-flash-001
+RESEARCH_AGENT_MODEL=anthropic/claude-3.5-sonnet
+COPY_AGENT_MODEL=google/gemini-2.0-flash-001
+IMAGE_PROMPT_AGENT_MODEL=google/gemini-2.0-flash-001
+SAFETY_AGENT_MODEL=openai/gpt-4.1-mini
 ```
 
-If exact model IDs are configured, use:
+Example model mapping:
 
 ```txt
-MAIN_AGENT_MODEL=claude-3-5-sonnet-20240620
-FAST_AGENT_MODEL=gemini-2.0-flash-lite
-OPENROUTER_FAST_MODEL=google/gemini-2.0-flash-001
+Main Agent / Orchestrator -> MAIN_AGENT_MODEL
+Content Strategy Agent -> RESEARCH_AGENT_MODEL or MAIN_AGENT_MODEL
+Copywriting Agent -> COPY_AGENT_MODEL
+Image Prompt Agent -> IMAGE_PROMPT_AGENT_MODEL
+Analytics Summary -> FAST_AGENT_MODEL
+Web Search Summary -> RESEARCH_AGENT_MODEL
+Safety Explanation -> SAFETY_AGENT_MODEL
 ```
 
 Important: model IDs should be easy to update because LLM providers change versions frequently.
@@ -618,18 +848,18 @@ Important: model IDs should be easy to update because LLM providers change versi
 
 | Agent | Main Job | Recommended LLM | Why |
 |---|---|---|---|
-| Main Agent / Orchestrator | intent, planning, final response | Claude Sonnet class or strongest available reasoning model | best for multi-step decisions and clean final answer |
-| Connection Agent | OAuth action routing, status explanation | Gemini Flash Lite or deterministic logic | mostly API/status logic, no heavy reasoning needed |
-| Content Strategy Agent | campaigns, ideas, planning | Claude Sonnet class or Gemini Flash | needs creative planning and audience understanding |
-| Copywriting Agent | captions, hashtags, platform variants | Gemini Flash / Gemini Flash Lite, fallback Claude | fast and cost-effective for many drafts |
-| Image Generation Agent | image prompt writing + image action | Gemini Flash for prompt, image generation service for actual image | text LLM writes prompt; image model creates asset |
-| Media Agent | upload/reference/media selection | deterministic logic, optional Gemini Flash | mostly file/media operations |
-| Scheduling Agent | schedule/timezone/queue planning | deterministic logic + Gemini Flash for explanation | scheduling must be rule-based, LLM only explains |
-| Publishing Agent | publish/retry error explanation | deterministic logic + Gemini Flash | publishing must call platform APIs safely |
-| Analytics Agent | summarize metrics | Gemini Flash or Claude for deeper analysis | tables/metrics need clear summarization |
-| Autopilot Agent | recurring content automation | Claude Sonnet class for setup, Gemini Flash for recurring drafts | setup needs reasoning; recurring generation should be cheaper |
-| Safety And Review Agent | validation, risk checks | deterministic rules first, Claude/Gemini only for explanation | hard checks should not rely only on LLM |
-| Web Search Agent | fresh web research and summary | search API + Claude/Gemini summarizer | web fetch is not LLM; LLM summarizes sources |
+| Main Agent / Orchestrator | intent, planning, final response | OpenRouter `MAIN_AGENT_MODEL` | best model for multi-step decisions and clean final answer |
+| Connection Agent | OAuth action routing, status explanation | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only if explanation needed | mostly API/status logic, no heavy reasoning needed |
+| Content Strategy Agent | campaigns, ideas, planning | OpenRouter `RESEARCH_AGENT_MODEL` or `MAIN_AGENT_MODEL` | needs creative planning and audience understanding |
+| Copywriting Agent | captions, hashtags, platform variants | OpenRouter `COPY_AGENT_MODEL` | fast and cost-effective for many drafts |
+| Image Generation Agent | image prompt writing + image action | OpenRouter `IMAGE_PROMPT_AGENT_MODEL` for prompt; image generation service for asset | text LLM writes prompt; image model creates asset |
+| Media Agent | upload/reference/media selection | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only if explanation needed | mostly file/media operations |
+| Scheduling Agent | schedule/timezone/queue planning | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only for user-facing explanation | scheduling must be rule-based, LLM only explains |
+| Publishing Agent | publish/retry error explanation | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only for readable errors | publishing must call platform APIs safely |
+| Analytics Agent | summarize metrics | OpenRouter `FAST_AGENT_MODEL` or `RESEARCH_AGENT_MODEL` for deeper analysis | tables/metrics need clear summarization |
+| Autopilot Agent | recurring content automation | OpenRouter `MAIN_AGENT_MODEL` for setup, `COPY_AGENT_MODEL` for recurring drafts | setup needs reasoning; recurring generation should be cheaper |
+| Safety And Review Agent | validation, risk checks | deterministic rules first, OpenRouter `SAFETY_AGENT_MODEL` only for explanation | hard checks should not rely only on LLM |
+| Web Search Agent | fresh web research and summary | search API + OpenRouter `RESEARCH_AGENT_MODEL` summarizer | web fetch is not LLM; LLM summarizes sources |
 
 ### Cost And Speed Tiers
 
@@ -757,6 +987,25 @@ Response:
 
 Internal subagent execution details can be logged server-side for debugging, but should not be returned as user-visible UI state unless an admin/debug mode is explicitly enabled.
 
+### OpenRouter Backend Integration
+
+All agent LLM calls should go through one backend gateway:
+
+```txt
+fb_agent/app/services/agent_llm_gateway.py
+```
+
+Gateway responsibilities:
+
+- read `OPENROUTER_API_KEY` from backend environment
+- choose model by agent type from backend config
+- call OpenRouter chat/completions API
+- return text or JSON to hidden agents
+- never expose API key to frontend
+- never accept API key from user request
+
+Frontend must not send any LLM provider or API key fields.
+
 ### Suggested Backend Files
 
 Create:
@@ -822,6 +1071,8 @@ Do not expose agent trace to normal users.
 
 **Client summary:** Frontend mein `/agent` route primary app experience hoga. Existing pages fallback/internal use ke liye rahengi.
 
+Final product mein old dashboard tabs/sidebar user-facing experience ka hissa nahi rahenge.
+
 ### New Route
 
 Create:
@@ -846,6 +1097,64 @@ fb_dash/app/agent/components/ConfirmationModal.tsx
 ```
 
 Do not create a visible `SubagentsPanel` for normal users. Subagent names and internal status should stay hidden.
+
+### Remove Old Tabs And Sidebar
+
+Current dashboard-style navigation remove/hide karni hogi.
+
+User-facing final app should not show:
+
+- Overview tab
+- Post Queue tab
+- Ideas Board tab
+- AI Autopilot tab
+- Calendar tab
+- My Posts tab
+- Bulk Upload tab
+- Analytics tab
+- Media Library tab
+- Social Channels tab
+- Prompt Settings tab
+- Privacy Policy tab inside app navigation
+- old Sidebar component as the main navigation
+
+Implementation rule:
+
+- `/agent` route becomes the only primary logged-in experience.
+- Old pages can temporarily remain during migration for internal testing.
+- Final client-facing app should not route users to old tabs.
+- Remove old sidebar usage from final app shell.
+- Remove or hide old navigation code once agent workflows are complete.
+
+Existing old pages can be deleted only after equivalent agent workflows are working:
+
+- `/posts` replaced by Main Agent draft/create flow
+- `/scheduled-posts` replaced by Generated Drafts + schedule preview + queue summaries
+- `/bulk-upload` replaced by CSV upload inside composer
+- `/connect-apps` replaced by Connect Apps dropdown
+- `/analytics` replaced by Analytics Agent command flow
+- `/library` replaced by Media Agent and GeneratedAssetsPanel
+- `/autopilot` replaced by Autopilot Agent setup flow
+- `/prompt-settings` removed from user-facing product
+
+### API Key And Provider UI Policy
+
+Users must not see API key or provider configuration options.
+
+Remove/hide from final UI:
+
+- Gemini API key input
+- Claude API key input
+- OpenRouter API key input
+- active provider selector
+- Prompt Settings page from normal user navigation
+
+Backend policy:
+
+- NexLab/SocialHub owns and configures `OPENROUTER_API_KEY`.
+- All hidden agents use OpenRouter through backend services.
+- User requests never include provider/model choices.
+- User cannot provide, view, or edit LLM API keys.
 
 ### Responsive Component Rules
 
@@ -1168,7 +1477,8 @@ Implement first workflows:
 
 ### Phase 6: Polish And Production Readiness
 
-- remove/disable primary sidebar entry points from normal UX
+- remove old tabs/sidebar code from final user-facing app
+- remove user-facing API key/provider settings
 - fix encoding/glyph issues in visible text
 - improve mobile layout
 - add loading, error, empty states
@@ -1216,6 +1526,8 @@ Agent UI:
 - generated image preview appears
 - desktop shows full agent command center
 - mobile shows Main Agent chat and Drafts/Generated area only
+- old tabs/sidebar are not visible in final user flow
+- API key/provider settings are not visible to users
 
 Connect Apps:
 
@@ -1263,6 +1575,13 @@ Web Search:
 - source links or source names appear when useful
 - if web fetch fails, Main Agent shows a graceful fallback message
 
+LLM / API Key Policy:
+
+- all hidden agents use backend OpenRouter gateway
+- frontend never receives `OPENROUTER_API_KEY`
+- user cannot add or edit LLM API keys
+- Prompt Settings page is not reachable from final app navigation
+
 ## 16. Assumptions
 
 **Client summary:** Existing dashboard pages first phase mein delete nahi hongi. Agent-first UI primary experience banegi, aur OAuth remains required for social connections.
@@ -1270,6 +1589,8 @@ Web Search:
 - Existing dashboard pages are kept during migration.
 - Primary new experience is `/agent`.
 - Social apps use OAuth, not username/password automation.
+- Final user-facing tabs/sidebar will be removed after equivalent agent workflows are complete.
+- Users will not manage LLM API keys; NexLab/SocialHub will configure OpenRouter internally.
 - V1 voice uses browser speech recognition.
 - V1 agent orchestration can be deterministic routing.
 - Web Search Agent requires network-capable backend execution or a configured search provider.
