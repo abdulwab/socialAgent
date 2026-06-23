@@ -65,7 +65,7 @@ For backend work:
 - Backend production updates must be deployed through Docker/EC2.
 - If deployment is requested and the exact server transfer method is not available, ask for the approved Docker deploy method before proceeding.
 - If using EC2 commands, use the Docker container name from the deployment guide: `socialhub-api`.
-- Backend environment lives on the server via `/home/ubuntu/.env`; do not edit or expose secrets unless user explicitly asks.
+- Backend environment lives on the server via `/home/ubuntu/fb_agent/.env`; do not edit or expose secrets unless user explicitly asks.
 
 Known backend Docker commands from `fb_agent/AWS-DEPLOY-GUIDE.md`:
 
@@ -77,7 +77,7 @@ sudo docker run -d \
   --name socialhub-api \
   --restart always \
   -p 8000:8000 \
-  --env-file /home/ubuntu/.env \
+  --env-file /home/ubuntu/fb_agent/.env \
   socialhub-backend
 ```
 
@@ -89,7 +89,7 @@ sudo docker logs socialhub-api
 curl http://localhost:8000/health
 ```
 
-Note: The AWS deployment guide contains a GitHub pull workflow, but the latest user instruction overrides it. Do not use backend GitHub push. Be careful with any server-side `git pull` flow because local backend changes will not be on GitHub.
+Note: The AWS deployment guide contains a GitHub pull workflow and an older `/home/ubuntu/.env` path. The latest working deployment uses SCP to `/home/ubuntu/fb_agent/`, server-side Docker rebuild, and `/home/ubuntu/fb_agent/.env`. Do not use backend GitHub push. Be careful with any server-side `git pull` flow because local backend changes will not be on GitHub.
 
 ### Frontend
 
@@ -436,6 +436,48 @@ After each implementation step, re-check:
 - `implementation-plan/NEXLAB_AGENT_FIRST_REBUILD_PLAN.md`
 - `AGENTS_ARCHITECTURE_DESIGN.md`
 - `implementation-plan/NEXLAB_AGENT_FIRST_COMBINED_IMPLEMENTATION_PLAN.md`
+
+## Current Implementation State
+
+Last updated by Codex: 2026-06-23.
+
+Completed initial vertical slice:
+
+- Backend internal agent package added under `fb_agent/app/agents/`.
+- Backend agent route added at `POST /api/v1/agent/command`.
+- Backend confirmation route added at `POST /api/v1/agent/confirm`.
+- OpenRouter-only backend gateway scaffold added at `fb_agent/app/services/agent_llm_gateway.py`.
+- Hidden agents are backend-only and return structured data.
+- V1 workflow and confirmation state use in-memory storage to avoid DB migrations.
+- `/agent` frontend route added under `fb_dash/app/agent/`.
+- `/agent` uses its own Agent UI and does not depend on old Sidebar.
+- Connect Apps dropdown added inside `/agent` top bar.
+- Composer supports text and browser voice input fallback.
+- Generated assets panel and confirmation modal added.
+- Login, signup, Google auth, landing authenticated CTA, and social OAuth callback returns now route users to `/agent`.
+
+Important caveats:
+
+- Old dashboard pages still exist for migration fallback/internal use.
+- Old Sidebar still exists on old pages, but is not part of the new `/agent` primary flow.
+- CSV dry-run scheduling, real image generation attachment, analytics summaries, publishing execution, autopilot execution, and persistent agent DB tables are still pending later phases.
+- Backend Docker deployment was performed on 2026-06-23 using SCP to `ubuntu@3.109.208.88:/home/ubuntu/fb_agent/`, server-side `docker build -t socialhub-backend .`, and container restart with `--env-file /home/ubuntu/fb_agent/.env`.
+- Backend deployment verification passed: `/health` returned `{"status":"ok","message":"API is running"}`, and OpenAPI exposed `/api/v1/agent/command` plus `/api/v1/agent/csv-preview`.
+- Frontend changes were committed and pushed to `abdulwab/fb_dash` main with commit `181521a` (`feat: add agent-first command center`).
+- Added practical second slice after initial foundation: CSV preview endpoint/UI, real image service hook in Image Generation Agent, and DB-backed lightweight Analytics Agent summary.
+- Full frontend `npm run lint` passes with clean output.
+- Frontend `npm run build` passes.
+- Frontend `npm test` passes: 2 suites / 14 tests.
+- Frontend lint/test stabilization was committed and pushed to `abdulwab/fb_dash` main with commit `b0bc943` (`chore: stabilize frontend checks`).
+- Legacy lint warning baseline cleanup was committed and pushed to `abdulwab/fb_dash` main with commit `c295fbf` (`chore: silence legacy lint warnings`).
+- Agent workflow UI completion was committed and pushed to `abdulwab/fb_dash` main with commit `88df17d` (`feat: complete agent workflow UI`).
+- Backend new agent files compile with `.venv\Scripts\python.exe -m compileall`.
+- Full backend pytest passes with local `DATABASE_URL=sqlite:///./test_local.db`: 68 tests passed.
+- Backend Docker was redeployed after test fixes on 2026-06-23. Verification passed: `/health` OK, OpenAPI exposed `/api/v1/agent/command` and `/api/v1/agent/csv-preview`, and `socialhub-api` container was running from `socialhub-backend`.
+- Backend Docker was redeployed again on 2026-06-23 after completing V1 workflow execution. Verification passed: `/health` OK, OpenAPI exposed `/api/v1/agent/command`, `/confirm`, `/csv-preview`, and `/csv-schedule`, and `socialhub-api` was running.
+- V1 agent confirmation now executes real scheduling into `scheduled_posts`, CSV valid-row scheduling, direct publish attempts through existing platform services, and autopilot enable/config updates through existing `autopilot_configs`.
+- Agent command context now carries previous drafts/images from the frontend so follow-up commands like "schedule this post tomorrow at 10 AM" use the existing draft instead of generating a new one.
+- After user validation, old dashboard UI pages were removed from the active frontend experience on 2026-06-23. Heavy legacy page/component code was deleted, and old routes now redirect to `/agent` so bookmarks do not break.
 
 ## Final Checklist Before Reporting Done
 

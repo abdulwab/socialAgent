@@ -9,6 +9,49 @@
 
 ---
 
+## 0. Execution Progress
+
+Last updated: 2026-06-23.
+
+Completed initial vertical slice:
+
+- Phase 1 backend agent foundation: implemented.
+- Phase 2 OpenRouter gateway scaffold: implemented.
+- Phase 3 agent command API: implemented.
+- Phase 5 frontend `/agent` route: implemented.
+- Phase 6 auth redirect migration: implemented.
+- Additional practical workflow slices: implemented CSV preview endpoint/UI, Image Generation Agent media-service hook, and Analytics Agent lightweight DB summary.
+- Frontend pushed to GitHub `abdulwab/fb_dash` main: commit `181521a`.
+- Frontend lint/test stabilization pushed to GitHub `abdulwab/fb_dash` main: commit `b0bc943`.
+- Frontend legacy lint warning cleanup pushed to GitHub `abdulwab/fb_dash` main: commit `c295fbf`.
+- Frontend V1 agent workflow UI completion pushed to GitHub `abdulwab/fb_dash` main: commit `88df17d`.
+- Backend deployed to AWS Docker via SCP/server-side build/container restart. Backend GitHub was not pushed.
+- Backend V1 workflow execution deployed to AWS Docker via SCP/server-side build/container restart. Backend GitHub was not pushed.
+- After user validation, old dashboard UI code was removed from the active frontend experience. Legacy route entrypoints remain as `/agent` redirects to prevent broken old links.
+
+Verified against source docs:
+
+- `NEXLAB_AGENT_FIRST_REBUILD_PLAN.md` sections for `/agent`, backend command API, frontend architecture, auth redirects, hidden subagents, OpenRouter gateway, and safety rules.
+- `AGENTS_ARCHITECTURE_DESIGN.md` sections for single visible assistant, Main Agent orchestration, structured contracts, workflow state, hidden backend agents, and safety before mutation.
+
+Verification results:
+
+- `npm.cmd exec eslint app/agent -- --max-warnings=0`: passed.
+- `npm.cmd run lint` in `fb_dash`: passed with clean output.
+- `npm.cmd run build` in `fb_dash`: passed.
+- `npm.cmd test -- --runInBand` in `fb_dash`: passed, 2 suites / 14 tests.
+- `.venv\Scripts\python.exe -m compileall app\agents app\api\v1\agent_routes.py app\services\agent_llm_gateway.py` in `fb_agent`: passed.
+- Full backend pytest with `DATABASE_URL=sqlite:///./test_local.db`: passed, 68 tests.
+- Production backend verification after Docker deploy: `/health` passed and OpenAPI showed `/api/v1/agent/command`, `/api/v1/agent/confirm`, `/api/v1/agent/csv-preview`, and `/api/v1/agent/csv-schedule`.
+
+Pending phases:
+
+- Persistent DB-backed agent workflow/run/artifact/confirmation/memory tables, after explicit migration approval.
+- Advanced web search provider integration if a dedicated search API key/provider is approved. V1 has best-effort web search plus graceful fallback.
+- Final old dashboard/sidebar active UI cleanup is complete. Any future deletion should only remove route redirect stubs if the user accepts old links returning 404.
+
+---
+
 ## 1. Implementation Rule
 
 This plan must be executed with a source-document verification loop.
