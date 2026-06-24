@@ -5,7 +5,7 @@
 | Project | NexLab / SocialHub |
 | Purpose | Combined execution plan for implementing `NEXLAB_AGENT_FIRST_REBUILD_PLAN.md` and `AGENTS_ARCHITECTURE_DESIGN.md` |
 | Source Documents | `implementation-plan/NEXLAB_AGENT_FIRST_REBUILD_PLAN.md`, `AGENTS_ARCHITECTURE_DESIGN.md` |
-| Status | Ready for implementation |
+| Status | V1 implemented; cleanup/migration verification in progress |
 
 ---
 
@@ -25,9 +25,22 @@ Completed initial vertical slice:
 - Frontend lint/test stabilization pushed to GitHub `abdulwab/fb_dash` main: commit `b0bc943`.
 - Frontend legacy lint warning cleanup pushed to GitHub `abdulwab/fb_dash` main: commit `c295fbf`.
 - Frontend V1 agent workflow UI completion pushed to GitHub `abdulwab/fb_dash` main: commit `88df17d`.
+- Frontend old route stub deletion pushed to GitHub `abdulwab/fb_dash` main: commit `13929d3`.
 - Backend deployed to AWS Docker via SCP/server-side build/container restart. Backend GitHub was not pushed.
 - Backend V1 workflow execution deployed to AWS Docker via SCP/server-side build/container restart. Backend GitHub was not pushed.
-- After user validation, old dashboard UI code was removed from the active frontend experience. Legacy route entrypoints remain as `/agent` redirects to prevent broken old links.
+- After user validation, old dashboard UI code was removed from the active frontend experience.
+- Old dashboard route redirect stubs were deleted after explicit user approval; old dashboard URLs may now return 404.
+- Old prompt/provider settings were removed from frontend, backend model/schema/routes, and DB migration:
+  - `fb_agent/migrations/versions/f2c9d8e1a7b4_remove_user_prompt_provider_fields.py`
+- Production DB was cleaned and Alembic-stamped at `f2c9d8e1a7b4`; old `users` columns are absent.
+- Persistent DB-backed agent state was implemented:
+  - `agent_workflows`
+  - `agent_runs`
+  - `agent_artifacts`
+  - `agent_confirmations`
+  - `agent_memories`
+  - migration `fb_agent/migrations/versions/a9b7c6d5e4f3_add_agent_workflow_memory_tables.py`
+- Production backend Docker deploy completed for persistent agent state. Alembic version is `a9b7c6d5e4f3` and all five agent tables exist.
 
 Verified against source docs:
 
@@ -39,16 +52,19 @@ Verification results:
 - `npm.cmd exec eslint app/agent -- --max-warnings=0`: passed.
 - `npm.cmd run lint` in `fb_dash`: passed with clean output.
 - `npm.cmd run build` in `fb_dash`: passed.
-- `npm.cmd test -- --runInBand` in `fb_dash`: passed, 2 suites / 14 tests.
-- `.venv\Scripts\python.exe -m compileall app\agents app\api\v1\agent_routes.py app\services\agent_llm_gateway.py` in `fb_agent`: passed.
+- `npm.cmd test -- --runInBand` in `fb_dash`: passed.
+- `.venv\Scripts\python.exe -m compileall app migrations\versions\f2c9d8e1a7b4_remove_user_prompt_provider_fields.py` in `fb_agent`: passed.
 - Full backend pytest with `DATABASE_URL=sqlite:///./test_local.db`: passed, 68 tests.
 - Production backend verification after Docker deploy: `/health` passed and OpenAPI showed `/api/v1/agent/command`, `/api/v1/agent/confirm`, `/api/v1/agent/csv-preview`, and `/api/v1/agent/csv-schedule`.
+- Production OpenAPI has no prompt-settings prompt route.
+- Production DB verification: `old_columns_present []`, `alembic_version [('f2c9d8e1a7b4',)]`.
+- Production DB verification after persistent agent state deploy: `missing_tables []`, `alembic_version [('a9b7c6d5e4f3',)]`.
+- Full backend pytest after DB state implementation: passed, 70 tests.
 
 Pending phases:
 
-- Persistent DB-backed agent workflow/run/artifact/confirmation/memory tables, after explicit migration approval.
 - Advanced web search provider integration if a dedicated search API key/provider is approved. V1 has best-effort web search plus graceful fallback.
-- Final old dashboard/sidebar active UI cleanup is complete. Any future deletion should only remove route redirect stubs if the user accepts old links returning 404.
+- Final old dashboard/sidebar active UI cleanup is complete, including route stub deletion after user approval.
 
 ---
 

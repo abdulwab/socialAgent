@@ -8,7 +8,9 @@ The current strategic direction is an agent-first rebuild:
 
 - The user should primarily interact with one visible Main Agent.
 - Backend hidden agents/services should handle specialized work behind the scenes.
-- Old dashboard pages can remain during migration, but `/agent` becomes the primary logged-in experience.
+- `/agent` is the primary logged-in experience.
+- Old dashboard route stubs were intentionally removed after user approval; old dashboard URLs may return 404 instead of redirecting.
+- Old prompt/provider settings were intentionally removed. Do not reintroduce user-level `system_prompt`, `gemini_api_key`, `openrouter_api_key`, `claude_api_key`, or `active_provider` fields.
 
 Important planning docs:
 
@@ -88,6 +90,14 @@ sudo docker ps
 sudo docker logs socialhub-api
 curl http://localhost:8000/health
 ```
+
+When backend model/schema changes require DB changes, add an Alembic migration and apply it inside the deployed Docker container. The prompt/provider cleanup migration is:
+
+```txt
+fb_agent/migrations/versions/f2c9d8e1a7b4_remove_user_prompt_provider_fields.py
+```
+
+Production DB status after the cleanup: old `users` prompt/provider columns are absent and `alembic_version` is stamped at `f2c9d8e1a7b4`.
 
 Note: The AWS deployment guide contains a GitHub pull workflow and an older `/home/ubuntu/.env` path. The latest working deployment uses SCP to `/home/ubuntu/fb_agent/`, server-side Docker rebuild, and `/home/ubuntu/fb_agent/.env`. Do not use backend GitHub push. Be careful with any server-side `git pull` flow because local backend changes will not be on GitHub.
 
@@ -458,9 +468,12 @@ Completed initial vertical slice:
 
 Important caveats:
 
-- Old dashboard pages still exist for migration fallback/internal use.
-- Old Sidebar still exists on old pages, but is not part of the new `/agent` primary flow.
-- CSV dry-run scheduling, real image generation attachment, analytics summaries, publishing execution, autopilot execution, and persistent agent DB tables are still pending later phases.
+- Old dashboard pages and route redirect stubs have been removed after user approval.
+- Old prompt/provider settings have been removed from frontend, backend model/schema/routes, and production DB through Alembic migration.
+- Frontend old route stub deletion was pushed to `abdulwab/fb_dash` main as commit `13929d3`.
+- Persistent agent DB workflow/run/artifact/confirmation/memory tables are implemented with migration `a9b7c6d5e4f3_add_agent_workflow_memory_tables.py`.
+- Agent workflow state, hidden agent runs, artifacts, confirmations, and safe memories are DB-backed. Normal UI still shows only clean Main Agent output.
+- Production DB is stamped at `a9b7c6d5e4f3`; `agent_workflows`, `agent_runs`, `agent_artifacts`, `agent_confirmations`, and `agent_memories` exist.
 - Backend Docker deployment was performed on 2026-06-23 using SCP to `ubuntu@3.109.208.88:/home/ubuntu/fb_agent/`, server-side `docker build -t socialhub-backend .`, and container restart with `--env-file /home/ubuntu/fb_agent/.env`.
 - Backend deployment verification passed: `/health` returned `{"status":"ok","message":"API is running"}`, and OpenAPI exposed `/api/v1/agent/command` plus `/api/v1/agent/csv-preview`.
 - Frontend changes were committed and pushed to `abdulwab/fb_dash` main with commit `181521a` (`feat: add agent-first command center`).
@@ -477,7 +490,7 @@ Important caveats:
 - Backend Docker was redeployed again on 2026-06-23 after completing V1 workflow execution. Verification passed: `/health` OK, OpenAPI exposed `/api/v1/agent/command`, `/confirm`, `/csv-preview`, and `/csv-schedule`, and `socialhub-api` was running.
 - V1 agent confirmation now executes real scheduling into `scheduled_posts`, CSV valid-row scheduling, direct publish attempts through existing platform services, and autopilot enable/config updates through existing `autopilot_configs`.
 - Agent command context now carries previous drafts/images from the frontend so follow-up commands like "schedule this post tomorrow at 10 AM" use the existing draft instead of generating a new one.
-- After user validation, old dashboard UI pages were removed from the active frontend experience on 2026-06-23. Heavy legacy page/component code was deleted, and old routes now redirect to `/agent` so bookmarks do not break.
+- After user validation, old dashboard UI pages were removed from the active frontend experience on 2026-06-23. Heavy legacy page/component code was deleted, and old route stubs were later deleted too, so old dashboard URLs may return 404.
 
 ## Final Checklist Before Reporting Done
 
