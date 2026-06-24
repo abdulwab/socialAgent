@@ -474,6 +474,8 @@ Important caveats:
 - Persistent agent DB workflow/run/artifact/confirmation/memory tables are implemented with migration `a9b7c6d5e4f3_add_agent_workflow_memory_tables.py`.
 - Agent workflow state, hidden agent runs, artifacts, confirmations, and safe memories are DB-backed. Normal UI still shows only clean Main Agent output.
 - Production DB is stamped at `a9b7c6d5e4f3`; `agent_workflows`, `agent_runs`, `agent_artifacts`, `agent_confirmations`, and `agent_memories` exist.
+- Main Agent can answer product/app help questions through the `product_help` hidden agent. It uses OpenRouter when `OPENROUTER_API_KEY` exists and falls back to safe built-in SocialHub knowledge when the key is missing.
+- To enable LLM-powered agent answers in production, add `OPENROUTER_API_KEY=...` to `/home/ubuntu/fb_agent/.env` and Docker-restart/redeploy the backend. Do not put this key in frontend env or GitHub.
 - Backend Docker deployment was performed on 2026-06-23 using SCP to `ubuntu@3.109.208.88:/home/ubuntu/fb_agent/`, server-side `docker build -t socialhub-backend .`, and container restart with `--env-file /home/ubuntu/fb_agent/.env`.
 - Backend deployment verification passed: `/health` returned `{"status":"ok","message":"API is running"}`, and OpenAPI exposed `/api/v1/agent/command` plus `/api/v1/agent/csv-preview`.
 - Frontend changes were committed and pushed to `abdulwab/fb_dash` main with commit `181521a` (`feat: add agent-first command center`).
