@@ -449,7 +449,7 @@ After each implementation step, re-check:
 
 ## Current Implementation State
 
-Last updated by Codex: 2026-06-23.
+Last updated by Codex: 2026-06-25.
 
 Completed initial vertical slice:
 
@@ -493,6 +493,12 @@ Important caveats:
 - V1 agent confirmation now executes real scheduling into `scheduled_posts`, CSV valid-row scheduling, direct publish attempts through existing platform services, and autopilot enable/config updates through existing `autopilot_configs`.
 - Agent command context now carries previous drafts/images from the frontend so follow-up commands like "schedule this post tomorrow at 10 AM" use the existing draft instead of generating a new one.
 - After user validation, old dashboard UI pages were removed from the active frontend experience on 2026-06-23. Heavy legacy page/component code was deleted, and old route stubs were later deleted too, so old dashboard URLs may return 404.
+- Clerk authentication migration is implemented locally: frontend uses Clerk sign-in/sign-up/protected `/agent`, backend verifies Clerk JWTs and syncs users into the local `users` table through `clerk_user_id` plus `email_verified`.
+- Local Clerk env values are set in `fb_dash/.env.local` and `fb_agent/app/.env`; do not commit secret values. Required production envs are `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` on Vercel, plus `CLERK_SECRET_KEY`, `CLERK_ISSUER`, and `CLERK_JWKS_URL` in `/home/ubuntu/fb_agent/.env`.
+- Clerk backend migration file is `fb_agent/migrations/versions/b4e8f1a9c2d3_add_clerk_user_sync_fields.py`; apply it during backend Docker deployment.
+- SSH key for Docker deploy is documented in `.CLAUDE/rules/general.md` and exists at `C:\Users\alvil\socialhub-key.pem`; use it with `ssh/scp -i "C:\Users\alvil\socialhub-key.pem"`.
+- Clerk backend env values were added to `/home/ubuntu/fb_agent/.env` and backend Docker was rebuilt/restarted on 2026-06-25. Verification passed: `socialhub-api` running, container has `CLERK_SECRET_KEY`, `CLERK_ISSUER`, and `CLERK_JWKS_URL`, `/health` returns OK, production `alembic_version=b4e8f1a9c2d3`, and `users.clerk_user_id` plus `users.email_verified` are present.
+- Clerk frontend migration was pushed to `abdulwab/fb_dash` main on 2026-06-26. Verification passed: frontend lint/build/test pass, live `/login` shows Clerk, live `/agent` redirects unauthenticated users to `/login?redirect_url=...`, and the Clerk secret key was not found in tracked files, local static client bundle, or live login HTML.
 
 ## Final Checklist Before Reporting Done
 
