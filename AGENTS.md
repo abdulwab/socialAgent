@@ -334,8 +334,9 @@ fb_agent/app/services/agent_llm_gateway.py
 
 Rules:
 
-- The raw Z.AI General API key belongs in AWS Secrets Manager.
-- The active key alias, model policy, and GLM catalog belong in AWS SSM.
+- `ZAI_API_KEY` and `ZAI_BASE_URL` belong in the backend/server `.env`.
+- Agent model, fallback, thinking, temperature, and token settings belong in
+  `fb_agent/app/config/glm_models.json`.
 - OpenRouter and other provider gateways must not be reintroduced.
 - Agent source files must not hardcode model IDs, fallbacks, thinking, or token limits.
 - Frontend must never receive or send LLM API keys.
@@ -478,8 +479,9 @@ Important caveats:
 - Agent workflow state, hidden agent runs, artifacts, confirmations, and safe memories are DB-backed. Normal UI still shows only clean Main Agent output.
 - Production DB is stamped at `a9b7c6d5e4f3`; `agent_workflows`, `agent_runs`, `agent_artifacts`, `agent_confirmations`, and `agent_memories` exist.
 - Main Agent and every hidden agent use the same backend Z.AI gateway; only selected agents consume tokens.
-- Production requires a Z.AI General API key in AWS Secrets Manager plus active-key, model-policy, and model-catalog parameters in AWS SSM.
-- `deployment/zai/` contains reviewed testing/production policy templates. `scripts/configure_zai_runtime.py` provisions them without printing the secret.
+- Production requires `ZAI_API_KEY` and `ZAI_BASE_URL` in
+  `/home/ubuntu/fb_agent/.env`; model settings come from the tracked GLM JSON
+  configuration.
 - Backend Docker deployment was performed on 2026-06-23 using SCP to `ubuntu@3.109.208.88:/home/ubuntu/fb_agent/`, server-side `docker build -t socialhub-backend .`, and container restart with `--env-file /home/ubuntu/fb_agent/.env`.
 - Backend deployment verification passed: `/health` returned `{"status":"ok","message":"API is running"}`, and OpenAPI exposed `/api/v1/agent/command` plus `/api/v1/agent/csv-preview`.
 - Frontend changes were committed and pushed to `abdulwab/fb_dash` main with commit `181521a` (`feat: add agent-first command center`).
@@ -503,14 +505,11 @@ Important caveats:
 - SSH key for Docker deploy is documented in `.CLAUDE/rules/general.md` and exists at `C:\Users\alvil\socialhub-key.pem`; use it with `ssh/scp -i "C:\Users\alvil\socialhub-key.pem"`.
 - Clerk backend env values were added to `/home/ubuntu/fb_agent/.env` and backend Docker was rebuilt/restarted on 2026-06-25. Verification passed: `socialhub-api` running, container has `CLERK_SECRET_KEY`, `CLERK_ISSUER`, and `CLERK_JWKS_URL`, `/health` returns OK, production `alembic_version=b4e8f1a9c2d3`, and `users.clerk_user_id` plus `users.email_verified` are present.
 - Clerk frontend migration was pushed to `abdulwab/fb_dash` main on 2026-06-26. Verification passed: frontend lint/build/test pass, live `/login` shows Clerk, live `/agent` redirects unauthenticated users to `/login?redirect_url=...`, and the Clerk secret key was not found in tracked files, local static client bundle, or live login HTML.
-- Chinese-model-only backend migration was implemented locally on 2026-07-01:
-  one Z.AI GLM gateway, SSM model policy/catalog, Secrets Manager key lookup,
-  GLM-Image/Cloudinary flow, prompt/state secret redaction, and no OpenRouter
-  runtime branch. Local backend verification passed with 113 tests.
-- EC2 candidate image `socialhub-backend:zai-candidate-20260701` was built and
-  passed isolated `/health` plus `boto3` checks. The live `socialhub-api`
-  container remains on the previous image until a Z.AI General API key and SSM
-  runtime configuration are provisioned and live evaluations pass.
+- Chinese-model-only backend migration was simplified on 2026-07-01: one Z.AI
+  GLM gateway, server `.env` key/base URL, one tracked JSON model configuration,
+  GLM-Image/Cloudinary flow, and no OpenRouter runtime branch.
+- The live `socialhub-api` container remains on the previous image until a
+  Z.AI General API key is added to the server `.env` and live checks pass.
 
 ## Final Checklist Before Reporting Done
 

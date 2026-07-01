@@ -2,9 +2,9 @@
 
 Research date: 2026-07-01
 
-Implementation status: backend implementation and local automated verification
-completed on 2026-07-01. Production cutover remains gated by secure provisioning
-of a Z.AI General API key and the live capability/routing evaluation.
+Implementation status: simplified backend implementation and local automated
+verification completed on 2026-07-01. Production cutover remains gated by adding
+a Z.AI General API key to the server environment and running live checks.
 
 ## 1. Objective
 
@@ -69,27 +69,22 @@ controls, token usage, and OpenAI-compatible request/response structures.
 Completed:
 
 - Single Z.AI-only text/JSON/tool/image gateway.
-- AWS Secrets Manager key lookup through an SSM active-key alias.
-- SSM-driven model catalog, per-agent model/fallback/thinking/token policy.
+- Server `.env` key/base URL configuration.
+- One JSON model catalog and per-agent model/fallback/thinking/token policy.
 - Every registered agent and legacy AI route migrated to the same gateway.
 - Keyword planner removed from the production orchestrator path.
 - Strict Main Agent entity validation and unapproved native-tool rejection.
-- Same-provider retry rules, last-known configuration cache, request IDs, token,
-  latency, and estimated-cost logs.
-- Configurable daily budget warning/hard-stop support; disabled in templates
-  until an operating limit is approved.
+- Same-provider retry rules, request IDs, token, and latency logs.
 - GLM-Image temporary URL validation and permanent Cloudinary copy.
-- Secret redaction at command, state, memory, conversation, and gateway boundaries.
-- A 252-prompt live routing evaluation script.
-- Local compile plus 113 backend tests passed.
-- Candidate Docker image built on EC2; isolated `/health` and `boto3` checks passed.
+- Existing state, memory, and confirmation architecture preserved.
+- Local compile plus full backend tests passed.
+- Candidate Docker image will be rebuilt from the simplified implementation.
 - Existing production container and database remained unchanged.
 
 Production cutover gates:
 
-- Provision a paid/credited Z.AI General API key in AWS Secrets Manager.
-- Provision the reviewed SSM catalog/policy and non-secret env pointers.
-- Run the capability probe and 252-prompt live evaluation.
+- Add a paid/credited Z.AI General API key to the server `.env`.
+- Run live text, JSON, image, routing, and workflow checks.
 - Cut over only if model entitlement, JSON behavior, accuracy, latency, and
   observed billing pass.
 
@@ -213,12 +208,11 @@ Runtime sources:
 
 | Configuration | Source |
 |---|---|
-| Raw Z.AI API key | AWS Secrets Manager |
-| Z.AI base URL | Backend environment or AWS SSM |
-| Agent-to-model map | AWS SSM Parameter Store |
-| GLM model catalog | AWS SSM Parameter Store |
-| Thinking/token limits | AWS SSM Parameter Store |
-| Active key alias | AWS SSM Parameter Store |
+| Raw Z.AI API key | Backend/server `.env` |
+| Z.AI base URL | Backend/server `.env` |
+| Agent-to-model map | `app/config/glm_models.json` |
+| GLM model catalog | `app/config/glm_models.json` |
+| Thinking/token limits | `app/config/glm_models.json` |
 
 There must be no silent hardcoded fallback. If required configuration cannot be
 loaded and no last-known valid in-memory configuration exists, the gateway must
@@ -277,16 +271,13 @@ Add backend-owned configuration pointers:
 
 ```env
 ZAI_BASE_URL=https://api.z.ai/api/paas/v4
-ZAI_ACTIVE_KEY_PARAMETER=/socialhub/prod/zai/active-key-secret-id
-ZAI_MODEL_POLICY_PARAMETER=/socialhub/prod/zai/model-policy
-ZAI_MODEL_CATALOG_PARAMETER=/socialhub/prod/zai/model-catalog
-AWS_REGION=ap-south-1
+ZAI_API_KEY=...
+ZAI_MODEL_CONFIG_PATH=app/config/glm_models.json
 ```
 
 Rules:
 
-- Raw Z.AI key stays in AWS Secrets Manager, not `.env`.
-- `.env` contains only the non-secret AWS parameter pointers and base URL.
+- Raw Z.AI key stays in the backend/server `.env`.
 - Do not expose keys or model settings to the frontend.
 - Do not commit real keys.
 - Do not log keys.
@@ -353,20 +344,18 @@ required unless later justified.
 ### Phase 5: Configuration-Driven Model Policy
 
 The model policy must be the only component that resolves an agent to a model.
-The actual mapping must be loaded from AWS SSM, not embedded in agent source
-files.
+The actual mapping must be loaded from one backend JSON configuration, not
+embedded in agent source files.
 
-Reviewed SSM JSON templates live in:
+The reviewed model configuration lives in:
 
 ```text
-fb_agent/deployment/zai/model-catalog.json
-fb_agent/deployment/zai/model-policy.testing.json
-fb_agent/deployment/zai/model-policy.production.json
+fb_agent/app/config/glm_models.json
 ```
 
 Do not duplicate model IDs inside individual agent files.
 
-The gateway must validate SSM values against the approved GLM catalog before
+The gateway must validate JSON values against the approved GLM catalog before
 using them.
 
 ### Phase 6: Main Agent Migration
@@ -539,7 +528,7 @@ GLM-5.2
   -> GLM-4.7-FlashX
 ```
 
-The order is loaded from AWS SSM and is not hardcoded in gateway code.
+The order is loaded from `glm_models.json` and is not hardcoded in gateway code.
 
 Limitation: a complete Z.AI outage affects all models. In that case the request
 must fail safely, preserve workflow state, keep the user logged in, and execute
@@ -557,7 +546,6 @@ no mutation.
 - Do not retry authentication or quota errors.
 - Generate images only when requested.
 - Log input/output tokens, latency, model, gateway, and agent key server-side.
-- Add daily cost warnings and a configurable hard budget.
 - Use free Flash during controlled testing.
 - Use paid FlashX in production.
 - Never expose model names or cost traces in the normal user interface.
@@ -585,7 +573,7 @@ no mutation.
 
 ### 7.2 Routing Evaluation
 
-Create at least 200 representative prompts covering:
+Maintain representative routing tests covering:
 
 - Roman Urdu.
 - English.
@@ -667,7 +655,7 @@ Unrelated agents must not run or consume tokens.
 2. Convert the existing gateway to the single Z.AI implementation locally.
 3. Run the Z.AI General API capability probe.
 4. Run unit and contract tests.
-5. Run the 200-prompt Roman Urdu evaluation.
+5. Run representative Roman Urdu and mixed-language routing checks.
 6. Verify workflow states and confirmation behavior.
 7. Verify no secrets enter prompts.
 8. Verify cost and latency logs.

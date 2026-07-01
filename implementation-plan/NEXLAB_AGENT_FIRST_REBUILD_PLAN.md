@@ -803,7 +803,7 @@ GLM models use honge.
 
 The API key will be managed internally by NexLab/SocialHub only:
 
-- Raw Z.AI API key AWS Secrets Manager mein rahegi.
+- Raw Z.AI API key backend/server `.env` mein rahegi.
 - User ko API key add karne ka option nahi milega.
 - User ko API key settings, provider settings, ya model selector UI mein nazar nahi aayega.
 - Existing user-facing AI provider settings must be removed or hidden from the final agent-first UI.
@@ -815,18 +815,16 @@ Recommended rule:
 
 - Exactly one Z.AI gateway use karo; second provider fallback na rakho.
 - Model IDs agent ya gateway code mein hard-code na karo.
-- Model names AWS SSM policy/catalog se control hon.
+- Model names one backend JSON configuration se control hon.
 - User settings se provider select nahi hoga.
 - Fallback models bhi internal config se control hon.
 
 Add config options:
 
 ```txt
+ZAI_API_KEY=...
 ZAI_BASE_URL=https://api.z.ai/api/paas/v4
-ZAI_ACTIVE_KEY_PARAMETER=/socialhub/prod/zai/active-key-secret-id
-ZAI_MODEL_POLICY_PARAMETER=/socialhub/prod/zai/model-policy
-ZAI_MODEL_CATALOG_PARAMETER=/socialhub/prod/zai/model-catalog
-AWS_REGION=ap-south-1
+ZAI_MODEL_CONFIG_PATH=app/config/glm_models.json
 ```
 
 Example model mapping:
@@ -996,8 +994,8 @@ fb_agent/app/services/agent_llm_gateway.py
 
 Gateway responsibilities:
 
-- load active key alias and model policy/catalog from AWS SSM
-- read the raw Z.AI key from AWS Secrets Manager
+- read Z.AI key/base URL from the backend environment
+- load and validate the per-agent model configuration from one JSON file
 - validate agent/model compatibility
 - call Z.AI General API chat/image endpoints
 - return text or JSON to hidden agents

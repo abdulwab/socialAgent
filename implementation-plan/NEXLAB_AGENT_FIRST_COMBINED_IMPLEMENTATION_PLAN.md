@@ -180,11 +180,9 @@ Centralize all LLM calls behind backend configuration.
   - `fb_agent/app/services/agent_model_policy.py`
   - `fb_agent/app/services/agent_llm_errors.py`
 - Add backend-only environment handling:
+  - `ZAI_API_KEY`
   - `ZAI_BASE_URL`
-  - `ZAI_ACTIVE_KEY_PARAMETER`
-  - `ZAI_MODEL_POLICY_PARAMETER`
-  - `ZAI_MODEL_CATALOG_PARAMETER`
-  - `AWS_REGION`
+  - `ZAI_MODEL_CONFIG_PATH`
 - Add gateway helpers:
   - `run_reasoning_llm`
   - `run_fast_llm`
@@ -203,7 +201,7 @@ Check:
 
 Pass criteria:
 
-- Raw Z.AI key exists only in AWS Secrets Manager.
+- Raw Z.AI key exists only in the backend/server environment.
 - User-facing UI has no provider selector or API key input.
 - OAuth tokens, API keys, cookies, and credentials are never passed into prompts.
 - LLM gateway can return text and structured JSON.

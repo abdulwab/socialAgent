@@ -67,7 +67,7 @@ Agents ko design karte waqt yeh rules follow honge:
 
 7. **Z.AI GLM-only LLM gateway**
    All LLM and image-generation calls backend ke single Z.AI General API gateway
-   se hongi. Runtime model policy AWS SSM aur API key AWS Secrets Manager se
+   se hongi. API key server `.env` aur model policy one backend JSON file se
    load hogi. User ko API key/provider/model settings nahi milengi.
 
 ---
@@ -594,8 +594,8 @@ fb_agent/app/services/agent_llm_gateway.py
 
 Gateway responsibilities:
 
-- active Z.AI key alias AWS SSM aur raw key AWS Secrets Manager se read karna
-- agent type ke hisab se validated GLM model policy resolve karna
+- `ZAI_API_KEY` aur base URL backend environment se read karna
+- one JSON file se validated per-agent GLM model policy resolve karna
 - Z.AI General API call karna
 - JSON mode / structured output enforce karna where possible
 - retryable errors par configured same-provider GLM fallback use karna
@@ -606,14 +606,12 @@ Gateway responsibilities:
 Example config:
 
 ```txt
+ZAI_API_KEY=...
 ZAI_BASE_URL=https://api.z.ai/api/paas/v4
-ZAI_ACTIVE_KEY_PARAMETER=/socialhub/prod/zai/active-key-secret-id
-ZAI_MODEL_POLICY_PARAMETER=/socialhub/prod/zai/model-policy
-ZAI_MODEL_CATALOG_PARAMETER=/socialhub/prod/zai/model-catalog
-AWS_REGION=ap-south-1
+ZAI_MODEL_CONFIG_PATH=app/config/glm_models.json
 ```
 
-Model IDs, fallback order, thinking mode, aur token limits SSM JSON mein rahenge;
+Model IDs, fallback order, thinking mode, aur token limits one JSON file mein rahenge;
 individual agents mein hardcode nahi honge. User ko API key/provider/model ka koi
 option nahi milega.
 

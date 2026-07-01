@@ -51,7 +51,7 @@ socialhub/
     │   │   └── analytics_routes.py
     │   ├── services/
     │   │   ├── agent_llm_gateway.py   # Single Z.AI GLM gateway
-    │   │   ├── agent_model_policy.py  # AWS SSM model policy/catalog
+    │   │   ├── agent_model_policy.py  # Local JSON GLM model policy
     │   │   ├── llm_service.py         # Legacy APIs wrapped through Z.AI gateway
     │   │   ├── facebook_service.py
     │   │   ├── linkedin_service.py
@@ -103,8 +103,7 @@ FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
 INSTAGRAM_APP_ID, INSTAGRAM_APP_SECRET, INSTAGRAM_REDIRECT_URI
 LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET
 X_CLIENT_ID, X_CLIENT_SECRET
-ZAI_BASE_URL, ZAI_ACTIVE_KEY_PARAMETER
-ZAI_MODEL_POLICY_PARAMETER, ZAI_MODEL_CATALOG_PARAMETER, AWS_REGION
+ZAI_API_KEY, ZAI_BASE_URL, ZAI_MODEL_CONFIG_PATH
 ```
 
 > `.env` file KABHI git mein push mat karo. Secrets sirf deployment env vars mein rakho.
@@ -134,9 +133,9 @@ ZAI_MODEL_POLICY_PARAMETER, ZAI_MODEL_CATALOG_PARAMETER, AWS_REGION
 
 ### AI Gateway And Model Policy
 - User LLM API key ya provider select nahi kar sakta.
-- Raw Z.AI key AWS Secrets Manager mein backend-owned hai.
-- Active secret alias, agent model mapping, catalog, thinking, fallbacks, aur
-  token limits AWS SSM se load hote hain.
+- Z.AI key aur base URL backend server `.env` mein backend-owned hain.
+- Agent model mapping, catalog, thinking, fallbacks, temperature, aur token
+  limits `app/config/glm_models.json` se load hote hain.
 - All agent and legacy AI calls `fb_agent/app/services/agent_llm_gateway.py`
   se Z.AI General API par jati hain.
 - OpenRouter ya second provider fallback allowed nahi hai.
