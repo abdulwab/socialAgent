@@ -7,8 +7,8 @@
 - **Frontend**: `fb_dash/` — Next.js 16, React 19, TypeScript, Tailwind CSS 4, Redux Toolkit
 - **Backend**: `fb_agent/` — FastAPI (Python), SQLAlchemy, Alembic, APScheduler
 - **Database**: PostgreSQL (production), SQLite (local/demo)
-- **AI Providers**: Google Gemini, Anthropic Claude, OpenRouter (multi-provider support)
-- **Deployment**: Frontend → Vercel (`https://fb.nexlabai.com`), Backend → Railway
+- **AI Provider**: Z.AI General API with approved GLM models only
+- **Deployment**: Frontend → Vercel (`https://fb.nexlabai.com`), Backend → AWS EC2 Docker
 
 ---
 
@@ -50,7 +50,9 @@ socialhub/
     │   │   ├── user_routes.py
     │   │   └── analytics_routes.py
     │   ├── services/
-    │   │   ├── llm_service.py         # Gemini, Claude, OpenRouter
+    │   │   ├── agent_llm_gateway.py   # Single Z.AI GLM gateway
+    │   │   ├── agent_model_policy.py  # AWS SSM model policy/catalog
+    │   │   ├── llm_service.py         # Legacy APIs wrapped through Z.AI gateway
     │   │   ├── facebook_service.py
     │   │   ├── linkedin_service.py
     │   │   ├── x_service.py
@@ -101,7 +103,8 @@ FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
 INSTAGRAM_APP_ID, INSTAGRAM_APP_SECRET, INSTAGRAM_REDIRECT_URI
 LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET
 X_CLIENT_ID, X_CLIENT_SECRET
-GEMINI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY
+ZAI_BASE_URL, ZAI_ACTIVE_KEY_PARAMETER
+ZAI_MODEL_POLICY_PARAMETER, ZAI_MODEL_CATALOG_PARAMETER, AWS_REGION
 ```
 
 > `.env` file KABHI git mein push mat karo. Secrets sirf deployment env vars mein rakho.
@@ -129,10 +132,14 @@ GEMINI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY
 - **ScheduledPost** — content, platform, scheduled_time, timezone, recurrence
 - **PostMetricsDaily** / **ProfileMetricsDaily** — analytics data
 
-### AI Provider Selection
-- User apna API key set kar sakta hai (`/api/v1/user`)
-- `active_provider` field decide karta hai kaun sa LLM use ho — gemini, claude, ya openrouter
-- LLM logic: `fb_agent/app/services/llm_service.py`
+### AI Gateway And Model Policy
+- User LLM API key ya provider select nahi kar sakta.
+- Raw Z.AI key AWS Secrets Manager mein backend-owned hai.
+- Active secret alias, agent model mapping, catalog, thinking, fallbacks, aur
+  token limits AWS SSM se load hote hain.
+- All agent and legacy AI calls `fb_agent/app/services/agent_llm_gateway.py`
+  se Z.AI General API par jati hain.
+- OpenRouter ya second provider fallback allowed nahi hai.
 
 ---
 

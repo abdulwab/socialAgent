@@ -16,7 +16,7 @@ Last updated: 2026-06-23.
 Completed initial vertical slice:
 
 - Phase 1 backend agent foundation: implemented.
-- Phase 2 OpenRouter gateway scaffold: implemented.
+- Phase 2 single Z.AI GLM gateway: implemented.
 - Phase 3 agent command API: implemented.
 - Phase 5 frontend `/agent` route: implemented.
 - Phase 6 auth redirect migration: implemented.
@@ -44,7 +44,7 @@ Completed initial vertical slice:
 
 Verified against source docs:
 
-- `NEXLAB_AGENT_FIRST_REBUILD_PLAN.md` sections for `/agent`, backend command API, frontend architecture, auth redirects, hidden subagents, OpenRouter gateway, and safety rules.
+- `NEXLAB_AGENT_FIRST_REBUILD_PLAN.md` sections for `/agent`, backend command API, frontend architecture, auth redirects, hidden subagents, Z.AI GLM gateway, and safety rules.
 - `AGENTS_ARCHITECTURE_DESIGN.md` sections for single visible assistant, Main Agent orchestration, structured contracts, workflow state, hidden backend agents, and safety before mutation.
 
 Verification results:
@@ -81,7 +81,7 @@ After every implementation step:
    - hidden agents are backend/internal only
    - no subagent names, raw logs, routing traces, model names, or API keys in normal UI
    - all risky actions require confirmation
-   - all LLM calls go through backend OpenRouter gateway
+   - all LLM calls go through the single backend Z.AI GLM gateway
    - OAuth is used for social connections, never username/password collection
 4. Mark the step as complete only when implementation and source-doc checks both pass.
 
@@ -167,7 +167,7 @@ Pass criteria:
 
 ---
 
-## 4. Phase 2: OpenRouter LLM Gateway
+## 4. Phase 2: Z.AI GLM Gateway
 
 ### Goal
 
@@ -177,14 +177,14 @@ Centralize all LLM calls behind backend configuration.
 
 - Create:
   - `fb_agent/app/services/agent_llm_gateway.py`
+  - `fb_agent/app/services/agent_model_policy.py`
+  - `fb_agent/app/services/agent_llm_errors.py`
 - Add backend-only environment handling:
-  - `OPENROUTER_API_KEY`
-  - `MAIN_AGENT_MODEL`
-  - `FAST_AGENT_MODEL`
-  - `RESEARCH_AGENT_MODEL`
-  - `COPY_AGENT_MODEL`
-  - `IMAGE_PROMPT_AGENT_MODEL`
-  - `SAFETY_AGENT_MODEL`
+  - `ZAI_BASE_URL`
+  - `ZAI_ACTIVE_KEY_PARAMETER`
+  - `ZAI_MODEL_POLICY_PARAMETER`
+  - `ZAI_MODEL_CATALOG_PARAMETER`
+  - `AWS_REGION`
 - Add gateway helpers:
   - `run_reasoning_llm`
   - `run_fast_llm`
@@ -203,7 +203,7 @@ Check:
 
 Pass criteria:
 
-- OpenRouter key exists only in backend environment.
+- Raw Z.AI key exists only in AWS Secrets Manager.
 - User-facing UI has no provider selector or API key input.
 - OAuth tokens, API keys, cookies, and credentials are never passed into prompts.
 - LLM gateway can return text and structured JSON.
@@ -717,7 +717,7 @@ Web Search:
 
 LLM/API policy:
 
-- backend owns OpenRouter key
+- backend owns the Z.AI key and GLM model policy
 - frontend never receives API keys
 - users cannot edit provider/model settings
 

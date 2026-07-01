@@ -798,36 +798,35 @@ Safety result:
 
 ### LLM Provider Strategy
 
-Final product mein all agents ke liye **OpenRouter** use hoga.
+Final product mein all agents ke liye direct **Z.AI General API** aur approved
+GLM models use honge.
 
 The API key will be managed internally by NexLab/SocialHub only:
 
-- `OPENROUTER_API_KEY` backend environment variable mein rahegi.
+- Raw Z.AI API key AWS Secrets Manager mein rahegi.
 - User ko API key add karne ka option nahi milega.
 - User ko API key settings, provider settings, ya model selector UI mein nazar nahi aayega.
 - Existing user-facing AI provider settings must be removed or hidden from the final agent-first UI.
 
-Existing backend currently Gemini, Claude, and OpenRouter support karta hai, but agent-first rebuild ka target policy OpenRouter-only hoga.
+Existing multi-provider implementation replace ho chuki hai. Agent-first rebuild
+ka target aur implemented policy Z.AI GLM-only hai.
 
 Recommended rule:
 
-- Provider hard-code as OpenRouter for agent workflows.
-- Model IDs hard-code na karo.
-- Model names backend environment/config se control hon.
+- Exactly one Z.AI gateway use karo; second provider fallback na rakho.
+- Model IDs agent ya gateway code mein hard-code na karo.
+- Model names AWS SSM policy/catalog se control hon.
 - User settings se provider select nahi hoga.
 - Fallback models bhi internal config se control hon.
 
 Add config options:
 
 ```txt
-OPENROUTER_API_KEY=...
-AGENT_LLM_PROVIDER=openrouter
-MAIN_AGENT_MODEL=openai/gpt-4.1
-FAST_AGENT_MODEL=google/gemini-2.0-flash-001
-RESEARCH_AGENT_MODEL=anthropic/claude-3.5-sonnet
-COPY_AGENT_MODEL=google/gemini-2.0-flash-001
-IMAGE_PROMPT_AGENT_MODEL=google/gemini-2.0-flash-001
-SAFETY_AGENT_MODEL=openai/gpt-4.1-mini
+ZAI_BASE_URL=https://api.z.ai/api/paas/v4
+ZAI_ACTIVE_KEY_PARAMETER=/socialhub/prod/zai/active-key-secret-id
+ZAI_MODEL_POLICY_PARAMETER=/socialhub/prod/zai/model-policy
+ZAI_MODEL_CATALOG_PARAMETER=/socialhub/prod/zai/model-catalog
+AWS_REGION=ap-south-1
 ```
 
 Example model mapping:
@@ -848,18 +847,18 @@ Important: model IDs should be easy to update because LLM providers change versi
 
 | Agent | Main Job | Recommended LLM | Why |
 |---|---|---|---|
-| Main Agent / Orchestrator | intent, planning, final response | OpenRouter `MAIN_AGENT_MODEL` | best model for multi-step decisions and clean final answer |
-| Connection Agent | OAuth action routing, status explanation | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only if explanation needed | mostly API/status logic, no heavy reasoning needed |
-| Content Strategy Agent | campaigns, ideas, planning | OpenRouter `RESEARCH_AGENT_MODEL` or `MAIN_AGENT_MODEL` | needs creative planning and audience understanding |
-| Copywriting Agent | captions, hashtags, platform variants | OpenRouter `COPY_AGENT_MODEL` | fast and cost-effective for many drafts |
-| Image Generation Agent | image prompt writing + image action | OpenRouter `IMAGE_PROMPT_AGENT_MODEL` for prompt; image generation service for asset | text LLM writes prompt; image model creates asset |
-| Media Agent | upload/reference/media selection | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only if explanation needed | mostly file/media operations |
-| Scheduling Agent | schedule/timezone/queue planning | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only for user-facing explanation | scheduling must be rule-based, LLM only explains |
-| Publishing Agent | publish/retry error explanation | deterministic logic + OpenRouter `FAST_AGENT_MODEL` only for readable errors | publishing must call platform APIs safely |
-| Analytics Agent | summarize metrics | OpenRouter `FAST_AGENT_MODEL` or `RESEARCH_AGENT_MODEL` for deeper analysis | tables/metrics need clear summarization |
-| Autopilot Agent | recurring content automation | OpenRouter `MAIN_AGENT_MODEL` for setup, `COPY_AGENT_MODEL` for recurring drafts | setup needs reasoning; recurring generation should be cheaper |
-| Safety And Review Agent | validation, risk checks | deterministic rules first, OpenRouter `SAFETY_AGENT_MODEL` only for explanation | hard checks should not rely only on LLM |
-| Web Search Agent | fresh web research and summary | search API + OpenRouter `RESEARCH_AGENT_MODEL` summarizer | web fetch is not LLM; LLM summarizes sources |
+| Main Agent / Orchestrator | intent, planning, final response | GLM-5.2 with configured GLM-4.7 fallback | multi-step decisions and clean final answer |
+| Connection Agent | OAuth action routing, status explanation | GLM-4.7-Flash/FlashX plus deterministic DB facts | fast grounded status handling |
+| Content Strategy Agent | campaigns, ideas, planning | GLM-4.7 | creative planning and audience understanding |
+| Copywriting Agent | captions, hashtags, platform variants | GLM-4.7 | reliable generation |
+| Image Generation Agent | image prompt writing + image action | GLM-4.7-Flash/FlashX and GLM-Image | text model writes prompt; image model creates asset |
+| Media Agent | upload/reference/media selection | GLM-4.7-Flash/FlashX plus deterministic media logic | low-cost interpretation |
+| Scheduling Agent | schedule/timezone/queue planning | GLM-4.7-Flash/FlashX plus deterministic scheduling | rules execute; LLM interprets/explains |
+| Publishing Agent | publish/retry error explanation | GLM-4.7-Flash/FlashX plus deterministic platform tools | mutations remain controlled |
+| Analytics Agent | summarize metrics | GLM-4.7 | deeper grounded analysis |
+| Autopilot Agent | recurring content automation | GLM-5.2 with GLM-4.7 fallback | stronger setup reasoning |
+| Safety And Review Agent | validation, risk checks | deterministic rules plus GLM-4.7 | hard checks never rely only on LLM |
+| Web Search Agent | fresh web research and summary | controlled fetch plus GLM-4.7 | LLM summarizes verified sources |
 
 ### Cost And Speed Tiers
 
@@ -987,7 +986,7 @@ Response:
 
 Internal subagent execution details can be logged server-side for debugging, but should not be returned as user-visible UI state unless an admin/debug mode is explicitly enabled.
 
-### OpenRouter Backend Integration
+### Z.AI GLM Backend Integration
 
 All agent LLM calls should go through one backend gateway:
 
@@ -997,9 +996,10 @@ fb_agent/app/services/agent_llm_gateway.py
 
 Gateway responsibilities:
 
-- read `OPENROUTER_API_KEY` from backend environment
-- choose model by agent type from backend config
-- call OpenRouter chat/completions API
+- load active key alias and model policy/catalog from AWS SSM
+- read the raw Z.AI key from AWS Secrets Manager
+- validate agent/model compatibility
+- call Z.AI General API chat/image endpoints
 - return text or JSON to hidden agents
 - never expose API key to frontend
 - never accept API key from user request
@@ -1151,8 +1151,8 @@ Remove/hide from final UI:
 
 Backend policy:
 
-- NexLab/SocialHub owns and configures `OPENROUTER_API_KEY`.
-- All hidden agents use OpenRouter through backend services.
+- NexLab/SocialHub owns and configures the Z.AI General API key.
+- All hidden agents use the single Z.AI gateway through backend services.
 - User requests never include provider/model choices.
 - User cannot provide, view, or edit LLM API keys.
 
@@ -1577,8 +1577,8 @@ Web Search:
 
 LLM / API Key Policy:
 
-- all hidden agents use backend OpenRouter gateway
-- frontend never receives `OPENROUTER_API_KEY`
+- all hidden agents use the backend Z.AI GLM gateway
+- frontend never receives the Z.AI API key
 - user cannot add or edit LLM API keys
 - Prompt Settings page is not reachable from final app navigation
 
@@ -1590,7 +1590,7 @@ LLM / API Key Policy:
 - Primary new experience is `/agent`.
 - Social apps use OAuth, not username/password automation.
 - Final user-facing tabs/sidebar will be removed after equivalent agent workflows are complete.
-- Users will not manage LLM API keys; NexLab/SocialHub will configure OpenRouter internally.
+- Users will not manage LLM API keys; NexLab/SocialHub configures Z.AI internally.
 - V1 voice uses browser speech recognition.
 - V1 agent orchestration can be deterministic routing.
 - Web Search Agent requires network-capable backend execution or a configured search provider.

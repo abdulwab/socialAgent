@@ -65,8 +65,10 @@ Agents ko design karte waqt yeh rules follow honge:
 6. **No secrets in prompts**
    OAuth tokens, API keys, passwords, cookies, raw credentials LLM prompt mein nahi bheje jayenge.
 
-7. **OpenRouter-only LLM gateway**
-   All LLM calls backend ke internal OpenRouter gateway se hongi. User ko API key/provider/model settings nahi milengi.
+7. **Z.AI GLM-only LLM gateway**
+   All LLM and image-generation calls backend ke single Z.AI General API gateway
+   se hongi. Runtime model policy AWS SSM aur API key AWS Secrets Manager se
+   load hogi. User ko API key/provider/model settings nahi milengi.
 
 ---
 
@@ -388,7 +390,7 @@ Never store or pass these into LLM prompts:
 - OAuth access tokens
 - refresh tokens
 - raw passwords
-- OpenRouter API key
+- Z.AI or any other LLM API key
 - platform API secrets
 - session cookies
 - private credentials
@@ -592,27 +594,28 @@ fb_agent/app/services/agent_llm_gateway.py
 
 Gateway responsibilities:
 
-- `OPENROUTER_API_KEY` backend env se read karna
-- agent type ke hisab se model select karna
-- OpenRouter API call karna
+- active Z.AI key alias AWS SSM aur raw key AWS Secrets Manager se read karna
+- agent type ke hisab se validated GLM model policy resolve karna
+- Z.AI General API call karna
 - JSON mode / structured output enforce karna where possible
-- retries and timeout handle karna
-- token usage log karna
+- retryable errors par configured same-provider GLM fallback use karna
+- authentication/quota errors ko retry na karna
+- timeout, request ID, token usage, latency, aur provider errors log karna
 - API key frontend ko kabhi expose na karna
 
 Example config:
 
 ```txt
-OPENROUTER_API_KEY=...
-MAIN_AGENT_MODEL=openai/gpt-4.1
-FAST_AGENT_MODEL=google/gemini-2.0-flash-001
-RESEARCH_AGENT_MODEL=anthropic/claude-3.5-sonnet
-COPY_AGENT_MODEL=google/gemini-2.0-flash-001
-IMAGE_PROMPT_AGENT_MODEL=google/gemini-2.0-flash-001
-SAFETY_AGENT_MODEL=openai/gpt-4.1-mini
+ZAI_BASE_URL=https://api.z.ai/api/paas/v4
+ZAI_ACTIVE_KEY_PARAMETER=/socialhub/prod/zai/active-key-secret-id
+ZAI_MODEL_POLICY_PARAMETER=/socialhub/prod/zai/model-policy
+ZAI_MODEL_CATALOG_PARAMETER=/socialhub/prod/zai/model-catalog
+AWS_REGION=ap-south-1
 ```
 
-User ko API key/provider/model ka koi option nahi milega.
+Model IDs, fallback order, thinking mode, aur token limits SSM JSON mein rahenge;
+individual agents mein hardcode nahi honge. User ko API key/provider/model ka koi
+option nahi milega.
 
 ---
 
@@ -773,7 +776,7 @@ Admin/debug mode later add kiya ja sakta hai, but client-facing product mein hid
 - base agent interface
 - agent registry
 - workflow state store
-- OpenRouter gateway
+- single Z.AI GLM gateway and SSM model policy
 
 ### Phase 2: Main Agent
 
@@ -819,7 +822,9 @@ NexLab agents backend mein hidden services honge. User sirf Main Agent se baat k
 
 Agents direct uncontrolled coordination nahi karenge. Main Agent orchestrator rahega. State database mein workflow, agent runs, artifacts, confirmations, and memories ke form mein save hogi.
 
-LLM access sirf backend OpenRouter gateway se hoga. User API key, provider, model, ya subagent internals nahi dekh sakega.
+LLM access sirf backend Z.AI GLM gateway se hoga. OpenRouter ya koi second
+provider gateway nahi hoga. User API key, provider, model, ya subagent internals
+nahi dekh sakega.
 
 This design gives:
 
