@@ -508,6 +508,8 @@ Important caveats:
 - Chinese-model-only backend migration was simplified on 2026-07-01: one Z.AI
   GLM gateway, server `.env` key/base URL, one tracked JSON model configuration,
   GLM-Image/Cloudinary flow, and no OpenRouter runtime branch.
+- Simplified EC2 candidate image `socialhub-backend:zai-simple-20260701` passed
+  isolated health/config checks and contains no boto3 dependency.
 - The live `socialhub-api` container remains on the previous image until a
   Z.AI General API key is added to the server `.env` and live checks pass.
 

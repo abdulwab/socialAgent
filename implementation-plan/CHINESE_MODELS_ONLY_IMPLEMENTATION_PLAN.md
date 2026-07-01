@@ -77,8 +77,9 @@ Completed:
 - Same-provider retry rules, request IDs, token, and latency logs.
 - GLM-Image temporary URL validation and permanent Cloudinary copy.
 - Existing state, memory, and confirmation architecture preserved.
-- Local compile plus full backend tests passed.
-- Candidate Docker image will be rebuilt from the simplified implementation.
+- Local compile plus 102 backend tests passed.
+- Simplified EC2 candidate image `socialhub-backend:zai-simple-20260701`
+  passed isolated health/config checks and contains no boto3 dependency.
 - Existing production container and database remained unchanged.
 
 Production cutover gates:
