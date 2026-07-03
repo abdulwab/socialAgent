@@ -1,5 +1,16 @@
 # NexLab SocialHub Combined Agent-First Implementation Plan
 
+> **2026-07-03 migration notice:** Previously completed custom agent-runtime work is now
+> the behavior baseline for a full LangGraph rebuild. Do not extend the custom
+> orchestrator with new workflow architecture. Use
+> `implementation-plan/NEXLAB_LANGGRAPH_FULL_REBUILD_PLAN.md` as the execution
+> checklist for graph state, all eleven domain subgraphs, typed service tools, durable
+> memory, approval interrupts, compatibility rollout, and eventual legacy removal.
+> Every migration step must pass the gates in
+> `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`. The
+> customer frontend remains the custom Next.js `/agent` interface; Open WebUI is not
+> the production product UI.
+
 | Field | Details |
 |---|---|
 | Project | NexLab / SocialHub |

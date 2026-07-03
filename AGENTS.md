@@ -17,9 +17,14 @@ Important planning docs:
 - `implementation-plan/NEXLAB_AGENT_FIRST_REBUILD_PLAN.md`
 - `AGENTS_ARCHITECTURE_DESIGN.md`
 - `implementation-plan/NEXLAB_AGENT_FIRST_COMBINED_IMPLEMENTATION_PLAN.md`
+- `implementation-plan/NEXLAB_LANGGRAPH_FULL_REBUILD_PLAN.md`
+- `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`
 - `CLAUDE.md`
 
-When implementing the agent-first rebuild, always re-check the matching sections in the first two source docs and use the combined plan as the execution checklist.
+When implementing the LangGraph rebuild, use the LangGraph full rebuild plan as the
+target architecture and the test-gated checklist as the execution authority. Re-check
+the older agent-first source docs for product requirements that have not yet been
+consolidated.
 
 ## Repository Layout
 
@@ -32,7 +37,6 @@ socialhub/
   implementation-plan/      # Planning docs
   AGENTS_ARCHITECTURE_DESIGN.md
   CLAUDE.md
-  PRODUCT_PLAN.md
 ```
 
 There are nested git repositories:
@@ -536,3 +540,4 @@ For docs/plans:
 - Relevant root docs updated.
 - No frontend/backend repo actions unless requested.
 - Source docs kept consistent.
+- LangGraph checklist status and test evidence updated after every implementation gate.

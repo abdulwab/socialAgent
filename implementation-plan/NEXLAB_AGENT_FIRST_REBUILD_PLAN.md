@@ -1,5 +1,12 @@
 # NexLab SocialHub Agent-First Rebuild Plan
 
+> **2026-07-03 update:** The product direction remains agent-first, but the target
+> execution runtime is now LangGraph rather than the current custom orchestrator.
+> Existing services remain business-logic tools behind the graph. The authoritative
+> technical replacement plan is
+> `implementation-plan/NEXLAB_LANGGRAPH_FULL_REBUILD_PLAN.md`. This document remains a
+> product requirements source and must be kept consistent with that plan.
+
 | Field | Details |
 |---|---|
 | Project | NexLab SocialHub |

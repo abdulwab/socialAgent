@@ -4,6 +4,19 @@
 |---|---|
 | Project | NexLab / SocialHub Agent-First System |
 | Document Purpose | Explain how agents will be built, coordinated, designed, and how state and memory will be managed |
+
+> **2026-07-03 architecture decision:** The target runtime is now LangGraph. The
+> existing custom class registry/orchestrator is a legacy implementation to be replaced
+> through a tested cutover. All eleven hidden domain agents will be LangGraph
+> nodes/subgraphs, and existing SocialHub services/APIs will be exposed as typed,
+> permissioned tools. Durable thread state will use a PostgreSQL LangGraph checkpointer;
+> safe cross-thread memory will use a scoped persistent store. See
+> `implementation-plan/NEXLAB_LANGGRAPH_FULL_REBUILD_PLAN.md` for the authoritative
+> replacement sequence, safety gates, migration plan, and definition of done.
+> The customer frontend remains the branded Next.js `/agent` application with optional
+> `assistant-ui` primitives and typed SSE. Open WebUI is not the customer frontend.
+> Step execution and test evidence follow
+> `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`.
 | Version | 1.0 |
 | Last Updated | 2026-06-22 |
 | Status | Planning / Architecture Design |
