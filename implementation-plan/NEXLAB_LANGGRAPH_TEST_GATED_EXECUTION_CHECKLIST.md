@@ -227,7 +227,7 @@ Evidence:
 
 ## Step 11 — Exactly-Once Scheduling
 
-Status: `PENDING`
+Status: `PASS`
 
 - Enable scheduling only after approval with transactional idempotency and revalidation.
 
@@ -235,6 +235,12 @@ Tests: single/bulk/CSV, double resume, timeout boundaries, partial failure, tran
 rollback, audit.
 
 Pass: zero unconfirmed writes and at most one logical result per approved proposal.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_11_EXACTLY_ONCE_SCHEDULING.md`
+- Focused tests: `14 passed`
+- Full backend tests: `213 passed, 1 skipped`
 
 ## Step 12 — Image, Media, and Web Search Subgraphs
 
