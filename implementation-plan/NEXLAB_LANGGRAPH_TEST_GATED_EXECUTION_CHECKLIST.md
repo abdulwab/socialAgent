@@ -38,7 +38,9 @@ source of product state.
 
 ## Step 0 — Baseline
 
-Status: `PENDING`
+Status: `IN_PROGRESS`
+
+Evidence: `implementation-plan/NEXLAB_LANGGRAPH_STEP_0_BASELINE.md`
 
 - Inventory APIs, agent classes, service calls, mutations, DB tables, tests, and docs.
 - Add golden scenarios for all eleven agents, Roman Urdu/English, follow-ups, and errors.
