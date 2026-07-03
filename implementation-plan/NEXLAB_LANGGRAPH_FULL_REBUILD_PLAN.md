@@ -16,8 +16,7 @@
 > `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`. Every step
 > must pass its implementation, test, security, documentation, and rollback gate before
 > the next step starts. The customer frontend remains the branded Next.js `/agent`
-> application with optional `assistant-ui` primitives and typed SSE; Open WebUI is not
-> the production customer frontend.
+> application using `assistant-ui` primitives and typed SSE.
 >
 > The current-code findings and prioritized legacy disposition are recorded in
 > `implementation-plan/NEXLAB_LANGGRAPH_LEGACY_AUDIT.md`.

@@ -9,7 +9,6 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:api.github.com)",
-      "WebFetch(domain:web-production-a02ea.up.railway.app)",
       "WebFetch(domain:fb.nexlabai.com)"
     ],
     "deny": [],

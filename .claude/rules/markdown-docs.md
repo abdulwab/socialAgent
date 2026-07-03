@@ -27,8 +27,8 @@ paths:
 
 ## File Locations
 
-- `.claude/rules/` — Claude ke liye project rules
-- `.claude/skills/` — Reusable skill definitions
-- `.claude/memory/` — Project context memory
+- `.CLAUDE/rules/` — coding-agent project rules
+- `.CLAUDE/skills/` — reusable skill definitions
+- `.CLAUDE/memory/` — project context memory
 - `fb_dash/README.md` — Frontend setup guide
 - `fb_agent/README.md` — Backend setup guide

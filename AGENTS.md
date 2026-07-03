@@ -103,7 +103,10 @@ fb_agent/migrations/versions/f2c9d8e1a7b4_remove_user_prompt_provider_fields.py
 
 Production DB status after the cleanup: old `users` prompt/provider columns are absent and `alembic_version` is stamped at `f2c9d8e1a7b4`.
 
-Note: The AWS deployment guide contains a GitHub pull workflow and an older `/home/ubuntu/.env` path. The latest working deployment uses SCP to `/home/ubuntu/fb_agent/`, server-side Docker rebuild, and `/home/ubuntu/fb_agent/.env`. Do not use backend GitHub push. Be careful with any server-side `git pull` flow because local backend changes will not be on GitHub.
+The AWS deployment guide now documents the approved SCP to
+`/home/ubuntu/fb_agent/`, server-side Docker rebuild, and
+`/home/ubuntu/fb_agent/.env` workflow. Do not use backend GitHub push or server-side
+GitHub pull.
 
 ### Frontend
 

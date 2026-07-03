@@ -1,18 +1,13 @@
-# SocialHub — Memory Index
+# SocialHub Memory Index
 
-> Yeh index file hai. Asli memory content individual files mein hai.
-> Har line ek memory file ka pointer hai — content yahan nahi likhna.
+- [Project architecture](project-architecture.md)
+- [User state and memory](user-state-memory.md)
+- [Backend API and tools](backend-api-tools.md)
+- [Frontend](frontend.md)
+- [LLM policy](llm-policy.md)
+- [Database](database.md)
+- [Deployment workflow](deployment-workflow.md)
+- [Social platforms](social-platforms.md)
 
-## Project
-
-- [Project Overview](project-overview.md) — SocialHub kya hai, goals, production URLs, current status
-- [Architecture](architecture.md) — Monorepo structure, frontend/backend split, key entry points
-- [Tech Stack](tech-stack.md) — Saari technologies, versions, aur unka role
-- [Database Models](database-models.md) — SQLAlchemy tables, relationships, important fields
-- [API Routes](api-routes.md) — Saare backend endpoints, auth pattern, request/response format
-- [Frontend State](frontend-state.md) — Redux store, agentSlice, apiManager, async thunks
-- [Social Platforms](social-platforms.md) — Facebook, Instagram, LinkedIn, X OAuth flows aur constraints
-- [AI Providers](ai-providers.md) — Gemini, Claude, OpenRouter — selection logic aur per-user config
-- [Dev Workflow](dev-workflow.md) — Frontend/backend kaise run karein, env vars, migrations
-- [Deployment](deployment.md) — Vercel (frontend), Railway (backend), CORS, environment secrets
-- [UI Changelog](ui-changelog.md) — Steps 01-03: sidebar naming fixes, Overview page + API, Social Channels redesign
+Implementation plans are authoritative. Historical status never overrides the current
+LangGraph plan or test-gated checklist.

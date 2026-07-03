@@ -29,12 +29,12 @@ required approval/input. Production is never the first test environment.
 Keep the branded Next.js `/agent` product frontend. Use:
 
 - existing custom OAuth, artifact, CSV, schedule, analytics, progress, and confirmation UI
-- optional `assistant-ui` primitives for chat/thread rendering
+- `assistant-ui` primitives for chat/thread rendering
 - typed Server-Sent Events initially
 - AG-UI/CopilotKit only later if generative UI provides a demonstrated benefit
 
-Open WebUI and LangGraph Studio may be private development tools, not the customer UI
-or source of product state.
+LangGraph Studio may be used privately for graph development, not as the customer UI or
+source of product state.
 
 ## Step 0 — Baseline
 
@@ -219,7 +219,7 @@ Status: `BLOCKED only if package.json change is required`
 - Hydrate backend threads, stream typed SSE, reconnect, and resume approvals.
 - Preserve custom SocialHub components.
 - Stop sending authoritative conversation/artifact context from React after parity.
-- Add `assistant-ui` only with explicit dependency approval.
+- Add the selected `assistant-ui` dependency after explicit dependency approval.
 
 Tests: components/contracts, hydrate/refresh/multi-device, reconnect/deduplication,
 confirm/cancel/expiry, responsive/accessibility, leakage checks, full lint/build/test.

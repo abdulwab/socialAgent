@@ -8,8 +8,8 @@
 > memory, approval interrupts, compatibility rollout, and eventual legacy removal.
 > Every migration step must pass the gates in
 > `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`. The
-> customer frontend remains the custom Next.js `/agent` interface; Open WebUI is not
-> the production product UI.
+> customer frontend remains the custom Next.js `/agent` interface using `assistant-ui`
+> primitives and typed SSE.
 
 | Field | Details |
 |---|---|

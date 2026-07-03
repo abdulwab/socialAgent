@@ -52,7 +52,7 @@ agent-browser wait network-idle # network quiet hone tak
 3. fill @email "test@example.com"
 4. fill @password "password123"
 5. click @login-button
-6. re-snapshot — dashboard load hona chahiye
+6. re-snapshot — `/agent` experience load honi chahiye
 ```
 
 ### Post Generation Test

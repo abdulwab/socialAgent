@@ -13,8 +13,8 @@
 > safe cross-thread memory will use a scoped persistent store. See
 > `implementation-plan/NEXLAB_LANGGRAPH_FULL_REBUILD_PLAN.md` for the authoritative
 > replacement sequence, safety gates, migration plan, and definition of done.
-> The customer frontend remains the branded Next.js `/agent` application with optional
-> `assistant-ui` primitives and typed SSE. Open WebUI is not the customer frontend.
+> The customer frontend remains the branded Next.js `/agent` application using
+> `assistant-ui` primitives and typed SSE.
 > Step execution and test evidence follow
 > `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`.
 | Version | 1.0 |
