@@ -111,7 +111,7 @@ Pass: durable resume, isolation, and demonstrated rollback.
 
 ## Step 5 — Typed Tool Platform
 
-Status: `PENDING`
+Status: `PASS`
 
 - Wrap existing services with strict schemas and stable names.
 - Add allowed-agent, read/mutation, risk, confirmation, ownership, idempotency, timeout,
@@ -122,6 +122,13 @@ Tests: schema rejection, permission matrix, ownership, timeout/retry, audit reda
 fake-provider integration, mutation-disabled proof.
 
 Pass: every capability is inventoried and no secret enters graph/tool output.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_5_TYPED_TOOLS.md`
+- `fb_agent/docs/LANGGRAPH_TOOL_INVENTORY.md`
+- Targeted tests: `7 passed`
+- Full backend tests: `173 passed, 1 skipped`
 
 ## Step 6 — Main Routing and Planning
 
