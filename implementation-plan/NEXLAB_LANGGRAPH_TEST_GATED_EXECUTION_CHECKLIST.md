@@ -65,7 +65,9 @@ Pass: reproducible install and zero legacy regression.
 
 ## Step 2 — Graph Foundation
 
-Status: `PENDING`
+Status: `PASS`
+
+Evidence: `implementation-plan/NEXLAB_LANGGRAPH_STEP_2_FOUNDATION.md`
 
 - Add typed state, reducers, runtime context, graph factory, budgets, and errors.
 - Adapt the existing Z.AI gateway; add no provider.
