@@ -51,7 +51,9 @@ Pass: reproducible baseline; every mutation and behavior has an owner.
 
 ## Step 1 — Dependencies
 
-Status: `BLOCKED: explicit requirements.txt approval needed`
+Status: `PASS`
+
+Evidence: `implementation-plan/NEXLAB_LANGGRAPH_STEP_1_DEPENDENCIES.md`
 
 - Add pinned LangGraph/checkpointer dependencies.
 - Prove compatibility with FastAPI, Pydantic, SQLAlchemy, Python, Z.AI, and Docker.
