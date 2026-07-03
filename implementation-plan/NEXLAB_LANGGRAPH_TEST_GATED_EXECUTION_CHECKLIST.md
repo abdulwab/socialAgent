@@ -208,7 +208,7 @@ Evidence:
 
 ## Step 10 — Scheduling and Safety Subgraphs
 
-Status: `PENDING`
+Status: `PASS`
 
 - Implement timezone handling, previews, connection/duplicate checks, deterministic
   policy, Safety review, immutable proposals, and LangGraph interrupt.
@@ -218,6 +218,12 @@ Tests: DST/timezones, missing fields, past dates, duplicates, bulk/CSV, resume/c
 expire, payload tampering, replay, double-click, process restart.
 
 Pass: preview-to-interrupt-to-resume works durably with zero mutation.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_10_SCHEDULING_SAFETY.md`
+- Focused tests: `28 passed`
+- Full backend tests: `207 passed, 1 skipped`
 
 ## Step 11 — Exactly-Once Scheduling
 
