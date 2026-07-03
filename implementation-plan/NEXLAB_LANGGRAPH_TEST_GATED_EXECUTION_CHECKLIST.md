@@ -81,7 +81,9 @@ Pass: deterministic, JSON-safe, secret-free graph; existing API unchanged.
 
 ## Step 3 — Thread API and Development Checkpointer
 
-Status: `PENDING`
+Status: `PASS`
+
+Evidence: `implementation-plan/NEXLAB_LANGGRAPH_STEP_3_THREAD_API.md`
 
 - Add authenticated thread create/list/get/command/resume endpoints behind the flag.
 - Define typed SSE events.
