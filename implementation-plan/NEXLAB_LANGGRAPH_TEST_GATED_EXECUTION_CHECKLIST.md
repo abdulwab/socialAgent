@@ -132,7 +132,7 @@ Evidence:
 
 ## Step 6 — Main Routing and Planning
 
-Status: `PENDING`
+Status: `PASS`
 
 - Implement context load, structured understanding, deterministic validation,
   clarification, planning, and routing nodes.
@@ -142,6 +142,13 @@ Tests: golden routing, Roman Urdu, typos, ambiguity, follow-ups, prompt injectio
 platform/page/date extraction, latency/token comparison.
 
 Pass: agreed routing accuracy and no unsafe proposal from missing/invalid input.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_6_MAIN_ROUTING.md`
+- Golden routing: `23/23` exact matches
+- Focused tests: `8 passed`
+- Full backend tests: `181 passed, 1 skipped`
 
 ## Step 7 — Memory and Context
 
