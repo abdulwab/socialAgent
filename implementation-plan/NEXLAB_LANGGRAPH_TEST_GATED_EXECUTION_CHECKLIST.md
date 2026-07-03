@@ -96,7 +96,9 @@ Pass: ownership cannot be bypassed and a test conversation survives restart.
 
 ## Step 4 — PostgreSQL Checkpointing
 
-Status: `BLOCKED: explicit migration approval needed`
+Status: `PASS`
+
+Evidence: `implementation-plan/NEXLAB_LANGGRAPH_STEP_4_POSTGRES_CHECKPOINTS.md`
 
 - Add official PostgreSQL checkpoint persistence.
 - Define retention, encryption, backup, pool, and cleanup policy.
