@@ -191,7 +191,7 @@ Evidence:
 
 ## Step 9 — Strategy and Copywriting Subgraphs
 
-Status: `PENDING`
+Status: `PASS`
 
 - Implement strategy and platform draft artifacts with scoped brand/analytics memory.
 
@@ -199,6 +199,12 @@ Tests: all platforms, languages, tone/preferences, malformed output, platform li
 stable artifact IDs.
 
 Pass: golden scenarios and safe read-only artifacts pass.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_9_STRATEGY_COPYWRITING.md`
+- Focused tests: `26 passed`
+- Full backend tests: `199 passed, 1 skipped`
 
 ## Step 10 — Scheduling and Safety Subgraphs
 
