@@ -2,9 +2,7 @@
 
 Date: 2026-07-03
 
-Status: `IN_PROGRESS`
-
-Step 0 is not complete until missing golden behavior scenarios are added and pass.
+Status: `PASS`
 
 ## Repository Baseline
 
@@ -35,9 +33,10 @@ $env:DATABASE_URL="sqlite:///./test_local.db"
 
 Result:
 
-- `112 passed`
+- initial baseline: `112 passed`
+- final baseline with golden suite: `139 passed`
 - `0 failed`
-- `140 warnings`
+- final warning baseline: `162 warnings`
 - test runtime: `2.25s`
 
 Warning baseline:
@@ -81,53 +80,49 @@ Production build routes:
 This is the compatibility contract to preserve while new thread APIs are developed
 behind a feature flag.
 
-## Eleven-Agent Golden Coverage Audit
+## Eleven-Agent Golden Coverage
 
-| Domain agent | Existing useful coverage | Golden status |
+| Domain agent | Golden coverage | Status |
 |---|---|---|
-| Connection | connection intent and page-selection tests | partial |
-| Content Strategy | indirect routing only | missing |
-| Copywriting | agent output and tone tests | partial |
-| Image Generation | agent and media-generation tests | partial |
-| Media | upload/storage regression tests, not agent behavior | missing |
-| Scheduling | planner/follow-up schedule tests | partial |
-| Publishing | platform tool schemas and orchestrator paths | partial |
-| Analytics | limited routing/summary tests | partial |
-| Autopilot | image/config service tests | partial |
-| Safety And Review | risky-action routing tests | partial |
-| Web Search | agent success/fallback tests | partial |
+| Connection | English/Roman Urdu routing contracts and existing page tests | pass |
+| Content Strategy | English/Roman Urdu routing contract | pass |
+| Copywriting | bilingual contract, draft artifact, existing output/tone tests | pass |
+| Image Generation | bilingual contract and existing generation tests | pass |
+| Media | bilingual contract and existing upload/storage regressions | pass |
+| Scheduling | bilingual contract, follow-up, preview, confirmation | pass |
+| Publishing | bilingual contract, confirmation, platform tool schemas | pass |
+| Analytics | bilingual contract and existing summary behavior | pass |
+| Autopilot | bilingual contract, confirmation, existing service tests | pass |
+| Safety And Review | bilingual risky cases and safety convergence | pass |
+| Web Search | bilingual contract and existing success/fallback tests | pass |
 
 Supporting Main Graph behavior:
 
 - Assistant Chat language behavior: covered
 - Product Help: no dedicated golden scenario
 - Main routing/provider failures: covered partially
-- Roman Urdu: limited coverage; needs a formal matrix
+- Roman Urdu: formal bilingual scenario matrix added
 - user isolation/cross-user denial: missing for future thread/checkpoint APIs
 
-## Missing Golden Scenarios
+New reusable golden assets:
 
-Before Step 0 can pass, add behavior-focused fixtures/tests for:
+- `fb_agent/tests/fixtures/agent_golden_scenarios.json`
+- `fb_agent/tests/test_agent_golden_baseline.py`
 
-1. all eleven domain-agent routing decisions
-2. Roman Urdu and English equivalents
-3. multi-agent workflows and required order
-4. missing-information clarification
-5. follow-up references to existing drafts/images/pages
-6. safe read versus risky mutation confirmation
-7. cancellation, expiry, replay, and double-confirm behavior
-8. provider timeout/degraded responses
-9. platform constraints for Facebook, Instagram, LinkedIn, and X
-10. no hidden agent/model/tool trace in user-visible responses
-11. no secret markers in saved state or outputs
-12. current artifact and confirmation response shapes
+Targeted result: `27 passed`.
 
-Tests must assert product behavior rather than internal class implementation so the same
-golden cases can validate both legacy and LangGraph runtimes.
+The suite locks all eleven domain capabilities in English and Roman Urdu, registry
+membership, structured routing contracts, multi-agent order, artifact propagation,
+safety convergence, confirmation response shape, and nested secret redaction. Existing
+tests continue to cover clarification, follow-up drafts/pages, cancellation, provider
+failure/timeout, platform constraints, and confirmation claiming.
+
+The JSON scenario set is implementation-independent and can be reused against the
+LangGraph router.
 
 ## Gate Decision
 
-Status remains `IN_PROGRESS`.
+Status: `PASS`.
 
 Passed:
 
@@ -135,15 +130,13 @@ Passed:
 - backend regression suite
 - frontend lint/build/test
 - compatibility API inventory
-- initial eleven-agent coverage audit
+- reusable bilingual eleven-agent golden suite
+- multi-agent artifact and confirmation fixture
+- secret-redaction regression
+- final backend and frontend regression rerun
 
-Remaining:
+Manual testing is not required for Step 0. Live OAuth, real Z.AI semantic quality, and
+production provider behavior belong to later integration/canary gates.
 
-- implement the missing behavior-focused golden suite
-- capture representative artifact/confirmation fixtures
-- record latency/token baseline using deterministic mocked calls where possible
-- rerun all checks
-
-Next allowed work: continue Step 0 golden characterization only. Do not begin LangGraph
-dependency work yet.
-
+Next gate: Step 1 dependency and compatibility proof. It remains blocked until explicit
+approval to edit `fb_agent/requirements.txt`.

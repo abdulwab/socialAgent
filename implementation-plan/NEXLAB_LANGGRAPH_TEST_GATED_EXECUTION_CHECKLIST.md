@@ -38,7 +38,7 @@ source of product state.
 
 ## Step 0 — Baseline
 
-Status: `IN_PROGRESS`
+Status: `PASS`
 
 Evidence: `implementation-plan/NEXLAB_LANGGRAPH_STEP_0_BASELINE.md`
 
