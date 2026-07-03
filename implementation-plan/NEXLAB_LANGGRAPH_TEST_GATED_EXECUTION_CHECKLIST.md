@@ -152,7 +152,7 @@ Evidence:
 
 ## Step 7 — Memory and Context
 
-Status: `PENDING`
+Status: `PASS`
 
 - Make backend `thread_id` authoritative.
 - Add checkpoint short-term memory.
@@ -165,6 +165,12 @@ irrelevant-memory exclusion, CRUD/expiry, nested-secret rejection, “schedule t
 without frontend artifact payload.
 
 Pass: memory is genuinely read/write and frontend history is not required for correctness.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_7_MEMORY_CONTEXT.md`
+- Focused tests: `20 passed`
+- Full backend tests: `187 passed, 1 skipped`
 
 ## Step 8 — Connection Agent Subgraph
 
