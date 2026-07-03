@@ -174,7 +174,7 @@ Evidence:
 
 ## Step 8 — Connection Agent Subgraph
 
-Status: `PENDING`
+Status: `PASS`
 
 - Implement status, pages, OAuth guidance, selection, token health, disconnect proposal.
 
@@ -182,6 +182,12 @@ Tests: disconnected/connected/expired, multiple pages, ownership, approval enfor
 secret absence.
 
 Pass: parity with legacy behavior; disconnect remains proposal-only.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_8_CONNECTION_SUBGRAPH.md`
+- Focused tests: `36 passed`
+- Full backend tests: `193 passed, 1 skipped`
 
 ## Step 9 — Strategy and Copywriting Subgraphs
 
