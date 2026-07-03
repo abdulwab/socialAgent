@@ -4,6 +4,9 @@ This checklist executes `NEXLAB_LANGGRAPH_FULL_REBUILD_PLAN.md`. Every step is a
 gate: do not start the next step until implementation, tests, diff review, rollback
 readiness, and documentation checks pass.
 
+Current legacy findings are tracked in
+`implementation-plan/NEXLAB_LANGGRAPH_LEGACY_AUDIT.md`.
+
 ## Execution Rules
 
 For every step:
@@ -294,4 +297,3 @@ Known gaps:
 Rollback verified:
 Next allowed step:
 ```
-

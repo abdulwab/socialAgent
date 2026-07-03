@@ -18,6 +18,9 @@
 > the next step starts. The customer frontend remains the branded Next.js `/agent`
 > application with optional `assistant-ui` primitives and typed SSE; Open WebUI is not
 > the production customer frontend.
+>
+> The current-code findings and prioritized legacy disposition are recorded in
+> `implementation-plan/NEXLAB_LANGGRAPH_LEGACY_AUDIT.md`.
 
 ## 1. Objective
 
