@@ -264,7 +264,7 @@ Evidence:
 
 ## Step 13 — Analytics, Publishing, and Autopilot Subgraphs
 
-Status: `PENDING`
+Status: `PASS`
 
 - Implement analytics reads and publish/retry/autopilot approved mutations.
 
@@ -272,6 +272,13 @@ Tests: empty/partial/full analytics, every platform, provider failures, Instagra
 rules, replay protection, autopilot changes, stale state and concurrent approvals.
 
 Pass: all eleven subgraphs pass golden tests and share one approval framework.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_13_OPERATIONAL_SUBGRAPHS.md`
+- Focused Step 13 tests: `12 passed`
+- All-subgraph/shared-approval/API regression: `57 passed`
+- Full backend tests: `230 passed, 1 skipped`
 
 ## Step 14 — Frontend Integration
 
