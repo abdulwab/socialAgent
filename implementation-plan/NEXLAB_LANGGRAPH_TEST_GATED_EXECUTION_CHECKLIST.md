@@ -282,7 +282,7 @@ Evidence:
 
 ## Step 14 — Frontend Integration
 
-Status: `BLOCKED only if package.json change is required`
+Status: `PASS`
 
 - Hydrate backend threads, stream typed SSE, reconnect, and resume approvals.
 - Preserve custom SocialHub components.
@@ -293,6 +293,14 @@ Tests: components/contracts, hydrate/refresh/multi-device, reconnect/deduplicati
 confirm/cancel/expiry, responsive/accessibility, leakage checks, full lint/build/test.
 
 Pass: backend-owned context works and usability is preserved or improved.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_14_FRONTEND_INTEGRATION.md`
+- Frontend tests: `3 suites / 10 tests passed`
+- Frontend lint/build: `passed`
+- Backend thread tests: `7 passed`
+- Full backend tests: `231 passed, 1 skipped`
 
 ## Step 15 — Shadow and Canary
 
