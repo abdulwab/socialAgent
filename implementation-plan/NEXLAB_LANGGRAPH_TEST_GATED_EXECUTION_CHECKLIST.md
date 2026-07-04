@@ -362,6 +362,21 @@ Remaining pass gate:
 
 Status: `BLOCKED: explicit final deletion approval needed`
 
+Reviewed manifest:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_17_LEGACY_DELETION_MANIFEST.md`
+
+2026-07-04 audit result:
+
+- No deletion was performed.
+- Step 15 is still awaiting its accepted observation window.
+- Step 16 production acceptance and rollback rehearsal have not run.
+- The legacy Main Agent is still used by the shadow comparator.
+- Compatibility command/confirm remain the frontend rollback path.
+- CSV preview/schedule still share the compatibility backend router and must be
+  migrated before that router can be removed.
+- Final deletion requires a fresh explicit approval after these blockers close.
+
 - Generate a reviewed deletion manifest from imports, routes, flags, tests, and docs.
 - Delete only code with a passing LangGraph replacement.
 - Remove adapters after the rollback window.
