@@ -333,7 +333,7 @@ Remaining pass gate:
 
 ## Step 16 — Production Cutover
 
-Status: `BLOCKED: explicit deployment approval needed`
+Status: `BLOCKED: deployment approval and Step 15 observation required`
 
 - Deploy by approved backend Docker/SCP workflow only.
 - Enable LangGraph while retaining the legacy rollback switch.
@@ -342,6 +342,21 @@ Tests: health/OpenAPI, authenticated thread, checkpoint/resume, memory retrieval
 controlled confirmation flows, logs/resources.
 
 Pass: production acceptance and observation window pass.
+
+Preflight evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_16_PRODUCTION_CUTOVER_PREFLIGHT.md`
+- Local Python 3.11 Docker build: `passed after compatibility fix`
+- Local Docker health/OpenAPI/logs: `passed`
+- Full backend tests: `244 passed, 1 skipped`
+
+Remaining pass gate:
+
+- explicit SCP/Docker/server-env/restart approval;
+- accepted Step 15 thresholds;
+- approved internal canary user IDs;
+- deployed authenticated acceptance and rollback rehearsal;
+- clean production observation window.
 
 ## Step 17 — Legacy Removal
 
