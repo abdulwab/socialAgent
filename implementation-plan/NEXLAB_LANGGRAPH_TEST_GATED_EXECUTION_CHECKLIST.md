@@ -304,7 +304,7 @@ Evidence:
 
 ## Step 15 — Shadow and Canary
 
-Status: `PENDING`
+Status: `READY FOR OBSERVATION`
 
 - Shadow only safe/read operations; never duplicate mutations.
 - Compare routing, artifacts, confirmations, latency, tokens, errors, and costs.
@@ -314,6 +314,22 @@ Tests: comparison reports, load/concurrency, restart/fault injection, rollback r
 monitoring/alerts.
 
 Pass: agreed quality/security/reliability thresholds and observation window pass.
+
+Readiness evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_15_SHADOW_CANARY_READINESS.md`
+- Focused rollout/load/fault tests: `36 passed`
+- Full backend tests: `244 passed, 1 skipped`
+- Frontend fallback tests: `3 suites / 11 tests passed`
+- Frontend lint/build: `passed`
+
+Remaining pass gate:
+
+- explicitly accept rollout thresholds;
+- authorize Docker deployment and server rollout configuration;
+- select internal canary user IDs;
+- complete deployed rollback rehearsal;
+- complete a clean observation window of at least 24 hours.
 
 ## Step 16 — Production Cutover
 
