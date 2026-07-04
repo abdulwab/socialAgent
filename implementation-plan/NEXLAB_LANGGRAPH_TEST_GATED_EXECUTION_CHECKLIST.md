@@ -244,7 +244,7 @@ Evidence:
 
 ## Step 12 — Image, Media, and Web Search Subgraphs
 
-Status: `PENDING`
+Status: `PASS`
 
 - Implement image generation/storage, media references/validation/attachment/deletion
   proposal, and cited approved search/fetch.
@@ -254,6 +254,13 @@ Tests: success/failure, ownership, formats, deletion interrupt, search degradati
 citations, prompt injection, large-reference handling.
 
 Pass: durable referenced artifacts and no external-content policy escalation.
+
+Evidence:
+
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_12_IMAGE_MEDIA_SEARCH.md`
+- Focused tests: `5 passed`
+- Step 12 plus adjacent graph regression: `39 passed`
+- Full backend tests: `218 passed, 1 skipped`
 
 ## Step 13 — Analytics, Publishing, and Autopilot Subgraphs
 
