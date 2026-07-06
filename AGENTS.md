@@ -437,88 +437,54 @@ Working style:
 
 ## Current Strategic Implementation Order
 
-For the agent-first rebuild, follow this order:
+The active runtime direction is LangGraph-only. Follow the test-gated LangGraph
+checklist and do not recreate the removed custom agent runtime.
 
-1. Backend agent foundation
-2. Single Z.AI GLM gateway
-3. `/api/v1/agent/command`
-4. Frontend `/agent` route
-5. Auth redirects to `/agent`
-6. Core workflows: connection, copywriting, scheduling, safety
-7. Creative/media/web-search/CSV workflows
-8. Voice command
-9. Analytics, publishing, autopilot
-10. Hide/remove old user-facing dashboard navigation
-11. Memory, audit, observability
-12. Testing and production polish
+Active sequence:
+
+1. Keep `/agent` as the primary logged-in experience.
+2. Keep backend thread APIs authoritative for conversation state, artifacts, memory,
+   approvals, and SSE.
+3. Keep existing OAuth/platform/scheduler/business services as typed LangGraph tools.
+4. Preserve the custom SocialHub assistant-ui frontend.
+5. Remove only dead or contradictory old code/docs after replacement tests pass.
 
 After each implementation step, re-check:
 
-- `implementation-plan/NEXLAB_AGENT_FIRST_REBUILD_PLAN.md`
-- `AGENTS_ARCHITECTURE_DESIGN.md`
-- `implementation-plan/NEXLAB_AGENT_FIRST_COMBINED_IMPLEMENTATION_PLAN.md`
+- `implementation-plan/NEXLAB_LANGGRAPH_FULL_REBUILD_PLAN.md`
+- `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`
+- `.CLAUDE/memory/`
 
 ## Current Implementation State
 
-Last updated by Codex: 2026-07-01.
+Last updated by Codex: 2026-07-07.
 
-Completed initial vertical slice:
+Active state:
 
-- Backend internal agent package added under `fb_agent/app/agents/`.
-- Backend agent route added at `POST /api/v1/agent/command`.
-- Backend confirmation route added at `POST /api/v1/agent/confirm`.
-- Single Z.AI GLM gateway implemented at `fb_agent/app/services/agent_llm_gateway.py`.
-- Hidden agents are backend-only and return structured data.
-- V1 workflow and confirmation state use in-memory storage to avoid DB migrations.
-- `/agent` frontend route added under `fb_dash/app/agent/`.
-- `/agent` uses its own Agent UI and does not depend on old Sidebar.
-- Connect Apps dropdown added inside `/agent` top bar.
-- Composer supports text and browser voice input fallback.
-- Generated assets panel and confirmation modal added.
-- Login, signup, Google auth, landing authenticated CTA, and social OAuth callback returns now route users to `/agent`.
-
-Important caveats:
-
-- Old dashboard pages and route redirect stubs have been removed after user approval.
-- Old prompt/provider settings have been removed from frontend, backend model/schema/routes, and production DB through Alembic migration.
-- Frontend old route stub deletion was pushed to `abdulwab/fb_dash` main as commit `13929d3`.
-- Persistent agent DB workflow/run/artifact/confirmation/memory tables are implemented with migration `a9b7c6d5e4f3_add_agent_workflow_memory_tables.py`.
-- Agent workflow state, hidden agent runs, artifacts, confirmations, and safe memories are DB-backed. Normal UI still shows only clean Main Agent output.
-- Production DB is stamped at `a9b7c6d5e4f3`; `agent_workflows`, `agent_runs`, `agent_artifacts`, `agent_confirmations`, and `agent_memories` exist.
-- Main Agent and every hidden agent use the same backend Z.AI gateway; only selected agents consume tokens.
-- Production requires `ZAI_API_KEY` and `ZAI_BASE_URL` in
-  `/home/ubuntu/fb_agent/.env`; model settings come from the tracked GLM JSON
-  configuration.
-- Backend Docker deployment was performed on 2026-06-23 using SCP to `ubuntu@3.109.208.88:/home/ubuntu/fb_agent/`, server-side `docker build -t socialhub-backend .`, and container restart with `--env-file /home/ubuntu/fb_agent/.env`.
-- Backend deployment verification passed: `/health` returned `{"status":"ok","message":"API is running"}`, and OpenAPI exposed `/api/v1/agent/command` plus `/api/v1/agent/csv-preview`.
-- Frontend changes were committed and pushed to `abdulwab/fb_dash` main with commit `181521a` (`feat: add agent-first command center`).
-- Added practical second slice after initial foundation: CSV preview endpoint/UI, real image service hook in Image Generation Agent, and DB-backed lightweight Analytics Agent summary.
-- Full frontend `npm run lint` passes with clean output.
-- Frontend `npm run build` passes.
-- Frontend `npm test` passes: 2 suites / 14 tests.
-- Frontend lint/test stabilization was committed and pushed to `abdulwab/fb_dash` main with commit `b0bc943` (`chore: stabilize frontend checks`).
-- Legacy lint warning baseline cleanup was committed and pushed to `abdulwab/fb_dash` main with commit `c295fbf` (`chore: silence legacy lint warnings`).
-- Agent workflow UI completion was committed and pushed to `abdulwab/fb_dash` main with commit `88df17d` (`feat: complete agent workflow UI`).
-- Backend new agent files compile with `.venv\Scripts\python.exe -m compileall`.
-- Full backend pytest passes with local `DATABASE_URL=sqlite:///./test_local.db`: 68 tests passed.
-- Backend Docker was redeployed after test fixes on 2026-06-23. Verification passed: `/health` OK, OpenAPI exposed `/api/v1/agent/command` and `/api/v1/agent/csv-preview`, and `socialhub-api` container was running from `socialhub-backend`.
-- Backend Docker was redeployed again on 2026-06-23 after completing V1 workflow execution. Verification passed: `/health` OK, OpenAPI exposed `/api/v1/agent/command`, `/confirm`, `/csv-preview`, and `/csv-schedule`, and `socialhub-api` was running.
-- V1 agent confirmation now executes real scheduling into `scheduled_posts`, CSV valid-row scheduling, direct publish attempts through existing platform services, and autopilot enable/config updates through existing `autopilot_configs`.
-- Agent command context now carries previous drafts/images from the frontend so follow-up commands like "schedule this post tomorrow at 10 AM" use the existing draft instead of generating a new one.
-- After user validation, old dashboard UI pages were removed from the active frontend experience on 2026-06-23. Heavy legacy page/component code was deleted, and old route stubs were later deleted too, so old dashboard URLs may return 404.
-- Clerk authentication migration is implemented locally: frontend uses Clerk sign-in/sign-up/protected `/agent`, backend verifies Clerk JWTs and syncs users into the local `users` table through `clerk_user_id` plus `email_verified`.
-- Local Clerk env values are set in `fb_dash/.env.local` and `fb_agent/app/.env`; do not commit secret values. Required production envs are `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` on Vercel, plus `CLERK_SECRET_KEY`, `CLERK_ISSUER`, and `CLERK_JWKS_URL` in `/home/ubuntu/fb_agent/.env`.
-- Clerk backend migration file is `fb_agent/migrations/versions/b4e8f1a9c2d3_add_clerk_user_sync_fields.py`; apply it during backend Docker deployment.
-- SSH key for Docker deploy is documented in `.CLAUDE/rules/general.md` and exists at `C:\Users\alvil\socialhub-key.pem`; use it with `ssh/scp -i "C:\Users\alvil\socialhub-key.pem"`.
-- Clerk backend env values were added to `/home/ubuntu/fb_agent/.env` and backend Docker was rebuilt/restarted on 2026-06-25. Verification passed: `socialhub-api` running, container has `CLERK_SECRET_KEY`, `CLERK_ISSUER`, and `CLERK_JWKS_URL`, `/health` returns OK, production `alembic_version=b4e8f1a9c2d3`, and `users.clerk_user_id` plus `users.email_verified` are present.
-- Clerk frontend migration was pushed to `abdulwab/fb_dash` main on 2026-06-26. Verification passed: frontend lint/build/test pass, live `/login` shows Clerk, live `/agent` redirects unauthenticated users to `/login?redirect_url=...`, and the Clerk secret key was not found in tracked files, local static client bundle, or live login HTML.
-- Chinese-model-only backend migration was simplified on 2026-07-01: one Z.AI
-  GLM gateway, server `.env` key/base URL, one tracked JSON model configuration,
-  GLM-Image/Cloudinary flow, and no OpenRouter runtime branch.
-- Simplified EC2 candidate image `socialhub-backend:zai-simple-20260701` passed
-  isolated health/config checks and contains no boto3 dependency.
-- The live `socialhub-api` container remains on the previous image until a
-  Z.AI General API key is added to the server `.env` and live checks pass.
+- `/agent` is the primary authenticated experience for all logged-in users.
+- The custom class-based agent runtime has been approved for deletion and must not be
+  recreated.
+- Backend agent execution is under `fb_agent/app/agent_graph/`.
+- Agent APIs are thread based:
+  - `GET/POST /api/v1/agent/threads`
+  - `GET/PATCH/DELETE /api/v1/agent/threads/{thread_id}`
+  - `POST /api/v1/agent/threads/{thread_id}/commands`
+  - `POST /api/v1/agent/threads/{thread_id}/resume`
+  - `GET /api/v1/agent/threads/{thread_id}/stream`
+- CSV endpoints remain available as support APIs: `/api/v1/agent/csv-preview` and
+  `/api/v1/agent/csv-schedule`.
+- Frontend `/agent` uses assistant-ui primitives, a visible conversation rail, typed
+  SSE, backend thread hydration, rename/delete/new chat controls, and backend-owned
+  approvals.
+- React must not send authoritative message history, generated artifacts, or hidden
+  agent/tool state.
+- Single backend Z.AI gateway remains at
+  `fb_agent/app/services/agent_llm_gateway.py`; model policy remains in
+  `fb_agent/app/config/glm_models.json`.
+- Clerk JWT owns user identity; every thread, checkpoint, memory, artifact,
+  confirmation, connected account, page, schedule, analytics query, and tool call must
+  validate user ownership.
+- Backend deploy remains Docker/SCP only; never push backend to GitHub.
 
 ## Final Checklist Before Reporting Done
 

@@ -12,11 +12,11 @@ Next.js /agent
   -> idempotent execution
 ```
 
-Domain agents: Connection, Content Strategy, Copywriting, Image Generation, Media,
-Scheduling, Publishing, Analytics, Autopilot, Safety And Review, Web Search.
+Domain agents are implemented as LangGraph nodes/subgraphs: Connection, Content
+Strategy, Copywriting, Image Generation, Media, Scheduling, Publishing, Analytics,
+Autopilot, Safety And Review, and Web Search.
 
-The class-based `fb_agent/app/agents/` runtime is temporary baseline code. Migrate one
-test gate at a time and remove it only after production parity.
+The class-based custom agent runtime has been removed. Do not recreate the old custom
+orchestrator, class registry, planner runtime, tool registry, or manual state store.
 
 Repositories: root plans/instructions, `fb_dash` frontend, `fb_agent` backend.
-

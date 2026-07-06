@@ -22,8 +22,8 @@ Authoritative documents:
 - `implementation-plan/NEXLAB_LANGGRAPH_LEGACY_AUDIT.md`
 - `AGENTS_ARCHITECTURE_DESIGN.md`
 
-Execute one checklist gate at a time. Do not delete legacy behavior before its
-replacement passes tests, canary, production observation, and deletion approval.
+Execute one checklist gate at a time. The custom pre-LangGraph agent runtime has been
+approved for removal; do not reintroduce compatibility command/confirm adapters.
 
 ## Repository Boundaries
 
@@ -54,8 +54,7 @@ secrets, deployment, and final legacy deletion require explicit approval.
 ## Backend
 
 - FastAPI, SQLAlchemy, Alembic, PostgreSQL, APScheduler
-- current legacy runtime: `fb_agent/app/agents/`
-- target runtime: `fb_agent/app/agent_graph/`
+- authoritative runtime: `fb_agent/app/agent_graph/`
 - LLM gateway: `fb_agent/app/services/agent_llm_gateway.py`
 - model policy: `fb_agent/app/config/glm_models.json`
 - API prefix: `/api/v1/`; health: `/health`
@@ -71,8 +70,8 @@ Docker rebuild with container `socialhub-api` and
 - API client: `fb_dash/lib/apiManager.ts`
 - API base: `/api/proxy/api/v1`
 
-The backend will become authoritative for threads, history, artifacts, memories, and
-confirmations.
+The backend is authoritative for threads, history, artifacts, memories, and
+confirmations. React must not send authoritative conversation/artifact context.
 
 ## Verification
 

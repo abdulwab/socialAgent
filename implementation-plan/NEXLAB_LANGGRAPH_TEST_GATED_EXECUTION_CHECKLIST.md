@@ -371,22 +371,21 @@ Remaining pass gate:
 
 ## Step 17 — Legacy Removal
 
-Status: `BLOCKED: explicit final deletion approval needed`
+Status: `IN PROGRESS: final deletion approval granted`
 
 Reviewed manifest:
 
 - `implementation-plan/NEXLAB_LANGGRAPH_STEP_17_LEGACY_DELETION_MANIFEST.md`
 
-2026-07-04 audit result:
+2026-07-07 cleanup scope:
 
-- No deletion was performed.
-- Step 15 is still awaiting its accepted observation window.
-- Step 16 production acceptance and rollback rehearsal have not run.
-- The legacy Main Agent is still used by the shadow comparator.
-- Compatibility command/confirm remain the frontend rollback path.
-- CSV preview/schedule still share the compatibility backend router and must be
-  migrated before that router can be removed.
-- Final deletion requires a fresh explicit approval after these blockers close.
+- User explicitly approved final deletion.
+- CSV preview/schedule were split into a dedicated support router.
+- Frontend compatibility fallback is being removed in favor of backend-owned
+  LangGraph threads for all logged-in users.
+- Shadow/canary comparator code is being removed because global cutover superseded
+  the shadow path.
+- Custom class-based agent runtime and implementation-only tests are being deleted.
 
 - Generate a reviewed deletion manifest from imports, routes, flags, tests, and docs.
 - Delete only code with a passing LangGraph replacement.
