@@ -334,6 +334,8 @@ Remaining pass gate:
   facts in analytics, and content-strategy provider degradation;
 - quality fixes deployed in `7c8f773`; active report preserved at `11/20`, with all
   numeric comparison thresholds passing;
+- tester-specific thread preview deployed in backend `2e90a9d` and frontend `15f2653`;
+  user 8 is allowed while non-listed users remain on shadow fallback;
 - collect 20 genuine safe comparison samples, with at least 24 hours between the
   first and last;
 - select internal canary user IDs;

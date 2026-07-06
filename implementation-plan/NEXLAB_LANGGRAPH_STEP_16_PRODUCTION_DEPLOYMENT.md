@@ -190,3 +190,24 @@ Backend commit `7c8f773` was deployed as
 - Health, migration, startup, scheduler, and rollout configuration passed.
 - The active report was preserved and contains `11/20` passing samples with `100%`
   route/artifact/confirmation agreement and zero shadow errors.
+
+### Tester-specific thread preview
+
+The initial assistant-ui integration did not include a visible conversation rail, and
+global shadow mode correctly forced all users through the legacy fallback. That made
+the production screen appear unchanged even though primitives were installed.
+
+The corrective preview adds:
+
+- visible New Chat and backend-owned conversation history;
+- thread selection/hydration and URL state;
+- assistant-ui Thread/Message/Composer primitives around the complete conversation;
+- an explicit shadow-mode exception for internal user IDs only.
+
+Frontend commit `15f2653` was pushed through GitHub/Vercel. Backend commit `2e90a9d`
+was deployed as `socialhub-backend:preview-2e90a9d`.
+
+Only the active Clerk-linked tester row (`user_id=8`) is in
+`LANGGRAPH_INTERNAL_USER_IDS`. Verification proved user 8 is allowed and a non-listed
+user receives 404. Global mode remains shadow, canary remains 0%, rollback remains
+false, and the existing `11/20` report is preserved.
