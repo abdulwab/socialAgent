@@ -332,6 +332,8 @@ Remaining pass gate:
   zero shadow errors;
 - manual quality follow-up required for grounded token health, consistent connection
   facts in analytics, and content-strategy provider degradation;
+- quality fixes deployed in `7c8f773`; active report preserved at `11/20`, with all
+  numeric comparison thresholds passing;
 - collect 20 genuine safe comparison samples, with at least 24 hours between the
   first and last;
 - select internal canary user IDs;

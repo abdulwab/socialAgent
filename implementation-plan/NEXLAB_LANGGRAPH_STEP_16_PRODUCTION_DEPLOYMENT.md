@@ -170,3 +170,23 @@ numeric routing report does not measure:
 These findings do not invalidate the routing comparison, but they are mandatory
 internal-canary acceptance cases. Step 16 cannot pass solely from the numeric shadow
 summary.
+
+### Grounded-response quality deployment
+
+Backend commit `7c8f773` was deployed as
+`socialhub-backend:quality-7c8f773`.
+
+- Token-health replies now use verified owned connection state and never ask the LLM
+  to infer token status.
+- Analytics status/connectivity output is deterministic and database-grounded.
+- Content strategy returns a safe degraded starter plan when Z.AI is temporarily
+  unavailable.
+- Assistant-ui thread/composer hierarchy and controls were repaired in frontend
+  commits `1735230` and `fc8c07d`, deployed through GitHub/Vercel.
+- Backend regression: `253 passed, 1 skipped`.
+- Frontend regression: lint/build and `12/12` tests passed.
+- Previous backend image retained as
+  `socialhub-backend:rollback-pre-quality-7c8f773`.
+- Health, migration, startup, scheduler, and rollout configuration passed.
+- The active report was preserved and contains `11/20` passing samples with `100%`
+  route/artifact/confirmation agreement and zero shadow errors.
