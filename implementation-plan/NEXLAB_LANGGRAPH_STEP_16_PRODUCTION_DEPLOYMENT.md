@@ -148,3 +148,25 @@ Deployment verification:
 
 The observation clock and 20-sample threshold restart from the first genuine safe
 request against this routing release.
+
+### First post-fix batch
+
+Ten authenticated safe commands were submitted against `e746708`.
+
+- sample count: `10/20`;
+- route match: `100%`;
+- artifact fingerprint match: `100%`;
+- confirmation mismatches: `0`;
+- shadow errors: `0`;
+- covered connection, analytics, copywriting, content strategy, and product help.
+
+Manual answer review also found three legacy-authoritative quality issues that the
+numeric routing report does not measure:
+
+- token-health returned generic navigation guidance instead of verified health;
+- two analytics answers contradicted each other about Instagram connectivity;
+- one content-strategy request returned a temporary Z.AI availability error.
+
+These findings do not invalidate the routing comparison, but they are mandatory
+internal-canary acceptance cases. Step 16 cannot pass solely from the numeric shadow
+summary.

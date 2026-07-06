@@ -328,6 +328,10 @@ Remaining pass gate:
 - the original 11-sample report failed routing at `63.6%`, was archived, and was
   superseded by routing release `e746708`;
 - fresh post-fix observation baseline on `2026-07-07`: `0/20` samples;
+- first post-fix batch: `10/20`, `100%` route/artifact/confirmation agreement and
+  zero shadow errors;
+- manual quality follow-up required for grounded token health, consistent connection
+  facts in analytics, and content-strategy provider degradation;
 - collect 20 genuine safe comparison samples, with at least 24 hours between the
   first and last;
 - select internal canary user IDs;
