@@ -99,3 +99,24 @@ Do not move to internal or cohort mode until:
 - an authenticated internal user is selected for the next canary phase.
 
 Step 16 and Step 17 must remain incomplete until this gate passes.
+
+## Observation checkpoint — 2026-07-07
+
+- Public and instance-local `/health`: passing.
+- Container: zero restarts since `2026-07-04T01:03:26Z`.
+- Image, migration, shadow mode, 0% canary, and rollback state remain correct.
+- Root disk: approximately 1.6 GB free.
+- Persistent report contains one authenticated safe comparison.
+- First/last sample: `2026-07-06T17:17:08Z`.
+- Route match: `100%`.
+- Artifact match: `100%`.
+- Confirmation mismatches: `0`.
+- Shadow errors: `0`.
+- The authenticated fallback acceptance requirement is satisfied by this production
+  sample.
+- Readiness remains false because 20 samples and 24 hours between the first and last
+  samples are required. Nineteen additional genuine safe requests remain, and a final
+  qualifying sample cannot be earlier than `2026-07-07T17:17:08Z`.
+
+No synthetic production traffic was generated to inflate the rollout report. Internal
+canary and Step 17 deletion remain blocked.

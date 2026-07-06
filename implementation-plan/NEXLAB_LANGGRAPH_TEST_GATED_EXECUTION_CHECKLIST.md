@@ -326,7 +326,10 @@ Readiness evidence:
 Remaining pass gate:
 
 - production shadow observation started at `2026-07-04T01:03:26Z`;
-- collect at least 20 safe comparison samples;
+- observation checkpoint on `2026-07-07`: `1/20` safe samples, all comparisons
+  passing, first sample `2026-07-06T17:17:08Z`;
+- collect 19 additional genuine safe comparison samples, with the final sample at
+  least 24 hours after the first;
 - select internal canary user IDs;
 - complete a clean observation window of at least 24 hours.
 
@@ -353,7 +356,8 @@ Preflight evidence:
 Remaining pass gate:
 
 - approved internal canary user IDs;
-- real Clerk-authenticated fallback acceptance;
+- real Clerk-authenticated fallback acceptance: `passed` through the first production
+  shadow sample;
 - at least 20 passing safe shadow comparisons;
 - clean production observation window.
 
