@@ -120,3 +120,31 @@ Step 16 and Step 17 must remain incomplete until this gate passes.
 
 No synthetic production traffic was generated to inflate the rollout report. Internal
 canary and Step 17 deletion remain blocked.
+
+## Routing correction and fresh observation — 2026-07-07
+
+The first 11-sample report failed the routing threshold at `63.6%`. Mismatches were
+concentrated in common Product Help, token-health, and draft/caption wording. The failed
+report was preserved as:
+
+```text
+/home/ubuntu/fb_agent/.langgraph/shadow-reports-pre-e746708-20260707.jsonl
+```
+
+Backend commit `e746708` added deterministic coverage for those production phrases.
+Focused routing/shadow tests passed (`25 passed`) and the full backend suite passed
+(`251 passed, 1 skipped`).
+
+Deployment verification:
+
+- image: `socialhub-backend:routing-e746708`;
+- rollback image: `socialhub-backend:rollback-pre-routing-e746708`;
+- health: passing internally and publicly;
+- migration: `c3d4e5f6a7b8 (head)`;
+- rollout: enabled, shadow, 0% canary, rollback false;
+- startup: application, agent routes, and scheduler healthy;
+- fresh report: `0/20` samples;
+- old report: preserved with all 11 records.
+
+The observation clock and 20-sample threshold restart from the first genuine safe
+request against this routing release.

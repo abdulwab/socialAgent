@@ -325,11 +325,11 @@ Readiness evidence:
 
 Remaining pass gate:
 
-- production shadow observation started at `2026-07-04T01:03:26Z`;
-- observation checkpoint on `2026-07-07`: `1/20` safe samples, all comparisons
-  passing, first sample `2026-07-06T17:17:08Z`;
-- collect 19 additional genuine safe comparison samples, with the final sample at
-  least 24 hours after the first;
+- the original 11-sample report failed routing at `63.6%`, was archived, and was
+  superseded by routing release `e746708`;
+- fresh post-fix observation baseline on `2026-07-07`: `0/20` samples;
+- collect 20 genuine safe comparison samples, with at least 24 hours between the
+  first and last;
 - select internal canary user IDs;
 - complete a clean observation window of at least 24 hours.
 
