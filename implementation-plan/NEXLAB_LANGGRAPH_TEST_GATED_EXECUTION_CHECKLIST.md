@@ -304,7 +304,7 @@ Evidence:
 
 ## Step 15 — Shadow and Canary
 
-Status: `OBSERVATION IN PROGRESS`
+Status: `SUPERSEDED BY USER-DIRECTED GLOBAL CUTOVER; acceptance in progress`
 
 - Shadow only safe/read operations; never duplicate mutations.
 - Compare routing, artifacts, confirmations, latency, tokens, errors, and costs.
@@ -343,7 +343,7 @@ Remaining pass gate:
 
 ## Step 16 — Production Cutover
 
-Status: `DEPLOYED: production acceptance and observation incomplete`
+Status: `GLOBAL CUTOVER DEPLOYED: manual acceptance incomplete`
 
 - Deploy by approved backend Docker/SCP workflow only.
 - Enable LangGraph while retaining the legacy rollback switch.
@@ -363,11 +363,11 @@ Preflight evidence:
 
 Remaining pass gate:
 
-- approved internal canary user IDs;
-- real Clerk-authenticated fallback acceptance: `passed` through the first production
-  shadow sample;
-- at least 20 passing safe shadow comparisons;
-- clean production observation window.
+- logged-in New Chat, rename, delete, refresh persistence, and cross-device acceptance;
+- responsive desktop/mobile visual acceptance;
+- controlled confirmation flow acceptance on the globally enabled thread runtime;
+- clean post-cutover observation window. The incomplete shadow report is preserved as
+  historical evidence and was explicitly superseded by the rollout owner.
 
 ## Step 17 — Legacy Removal
 

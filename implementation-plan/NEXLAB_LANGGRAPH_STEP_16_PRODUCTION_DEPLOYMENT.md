@@ -211,3 +211,33 @@ Only the active Clerk-linked tester row (`user_id=8`) is in
 `LANGGRAPH_INTERNAL_USER_IDS`. Verification proved user 8 is allowed and a non-listed
 user receives 404. Global mode remains shadow, canary remains 0%, rollback remains
 false, and the existing `11/20` report is preserved.
+
+### User-directed global assistant workspace cutover
+
+The rollout owner explicitly required the complete assistant workspace for every
+logged-in user rather than the legacy shadow fallback. This superseded the remaining
+20-sample shadow UI gate; the historical 11-sample report remains preserved for audit.
+
+Backend commit `864ad66` and frontend commit `996d2a8` provide:
+
+- global authenticated LangGraph thread access;
+- responsive dark conversation sidebar and mobile drawer;
+- New Chat, persistent history, switching, URL hydration;
+- owned rename and delete with confirmation;
+- modern neutral/emerald message and composer styling;
+- retained SocialHub account, connection, asset, CSV, voice, and approval controls.
+
+Production state:
+
+- image: `socialhub-backend:full-864ad66`;
+- rollout: enabled, `full`, rollback false;
+- rollback image: `socialhub-backend:rollback-pre-full-864ad66`;
+- migration: `c3d4e5f6a7b8 (head)`;
+- user 8 and a non-internal user both passed the global access gate;
+- OpenAPI exposes GET/PATCH/DELETE thread lifecycle methods;
+- PostgreSQL create/rename/delete probe passed and was cleaned up;
+- health, agent routes, scheduler, logs, and resources passed.
+
+Automated gates: backend `255 passed, 1 skipped`; frontend lint/build and `14/14`
+tests. Manual logged-in responsive and lifecycle acceptance remains required before
+Step 16 can be marked PASS.
