@@ -371,7 +371,7 @@ Remaining pass gate:
 
 ## Step 17 — Legacy Removal
 
-Status: `IN PROGRESS: final deletion approval granted`
+Status: `DEPLOYED: observation started`
 
 Reviewed manifest:
 
@@ -386,6 +386,9 @@ Reviewed manifest:
 - Shadow/canary comparator code is being removed because global cutover superseded
   the shadow path.
 - Custom class-based agent runtime and implementation-only tests are being deleted.
+- Backend commit `e45bcd1` deployed as
+  `socialhub-backend:langgraph-only-e45bcd1`; `/health`, OpenAPI, logs, and server
+  file audit passed.
 
 - Generate a reviewed deletion manifest from imports, routes, flags, tests, and docs.
 - Delete only code with a passing LangGraph replacement.

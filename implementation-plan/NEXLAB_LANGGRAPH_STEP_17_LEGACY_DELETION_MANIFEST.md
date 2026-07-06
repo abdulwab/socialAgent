@@ -1,7 +1,7 @@
 # Step 17 — Reviewed Legacy Deletion Manifest
 
 Date: 2026-07-07
-Status: **IN PROGRESS — deletion approved, local gates passing**
+Status: **DEPLOYED — observation started**
 
 This manifest is the review boundary and execution record for the final LangGraph
 cleanup. The user explicitly approved removal of the old custom agent runtime after the
@@ -72,6 +72,21 @@ Preserved replacement coverage:
 - Local Docker health: passed.
 - Local Docker OpenAPI: LangGraph thread routes present; compatibility command/confirm
   routes absent; CSV support routes present.
+
+## Production deployment evidence
+
+- Backend commit deployed: `e45bcd1`.
+- Production image: `socialhub-backend:langgraph-only-e45bcd1`.
+- Rollback image retained: `socialhub-backend:rollback-pre-legacy-e45bcd1`.
+- Deployment method: approved SCP archive plus server-side `sudo rsync`, Docker build,
+  and `socialhub-api` container restart with `/home/ubuntu/fb_agent/.env`.
+- `/health`: passed.
+- OpenAPI: LangGraph thread routes present; compatibility command/confirm routes absent;
+  CSV support routes present.
+- Server file audit: removed custom agent runtime, old tool registry, compatibility route
+  module, and shadow rollout helper are absent from `/home/ubuntu/fb_agent/`.
+- Startup logs: route registration, scheduler startup, and Uvicorn startup completed
+  without errors.
 
 ## Deployment rule
 
