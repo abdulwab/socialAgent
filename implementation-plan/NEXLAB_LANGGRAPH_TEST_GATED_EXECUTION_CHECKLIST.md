@@ -304,7 +304,7 @@ Evidence:
 
 ## Step 15 — Shadow and Canary
 
-Status: `READY FOR OBSERVATION`
+Status: `OBSERVATION IN PROGRESS`
 
 - Shadow only safe/read operations; never duplicate mutations.
 - Compare routing, artifacts, confirmations, latency, tokens, errors, and costs.
@@ -325,15 +325,14 @@ Readiness evidence:
 
 Remaining pass gate:
 
-- explicitly accept rollout thresholds;
-- authorize Docker deployment and server rollout configuration;
+- production shadow observation started at `2026-07-04T01:03:26Z`;
+- collect at least 20 safe comparison samples;
 - select internal canary user IDs;
-- complete deployed rollback rehearsal;
 - complete a clean observation window of at least 24 hours.
 
 ## Step 16 — Production Cutover
 
-Status: `BLOCKED: deployment approval and Step 15 observation required`
+Status: `DEPLOYED: production acceptance and observation incomplete`
 
 - Deploy by approved backend Docker/SCP workflow only.
 - Enable LangGraph while retaining the legacy rollback switch.
@@ -346,16 +345,16 @@ Pass: production acceptance and observation window pass.
 Preflight evidence:
 
 - `implementation-plan/NEXLAB_LANGGRAPH_STEP_16_PRODUCTION_CUTOVER_PREFLIGHT.md`
+- `implementation-plan/NEXLAB_LANGGRAPH_STEP_16_PRODUCTION_DEPLOYMENT.md`
 - Local Python 3.11 Docker build: `passed after compatibility fix`
 - Local Docker health/OpenAPI/logs: `passed`
 - Full backend tests: `244 passed, 1 skipped`
 
 Remaining pass gate:
 
-- explicit SCP/Docker/server-env/restart approval;
-- accepted Step 15 thresholds;
 - approved internal canary user IDs;
-- deployed authenticated acceptance and rollback rehearsal;
+- real Clerk-authenticated fallback acceptance;
+- at least 20 passing safe shadow comparisons;
 - clean production observation window.
 
 ## Step 17 — Legacy Removal
