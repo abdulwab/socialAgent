@@ -478,6 +478,17 @@ Active state:
   approvals.
 - React must not send authoritative message history, generated artifacts, or hidden
   agent/tool state.
+- Backend thread command handling owns durable draft/caption artifact memory:
+  generated copywriting artifacts are stored with user/thread/platform/type metadata,
+  reloaded from user-scoped memory, and resolved by backend artifact ID.
+- Artifact references such as latest Instagram caption, latest LinkedIn draft,
+  previous/past chat draft, this/jo/in captions, and platform-specific follow-ups
+  must be resolved server-side. If multiple user-owned artifacts match, ask a
+  clarification with options instead of guessing.
+- Scheduling and edits must use resolved backend artifact IDs; frontend chat history
+  or generated panel payloads are not authoritative context.
+- Pending clarification state is saved in thread working context. The next user answer
+  resumes the original intent and must not fall back to the generic help reply.
 - Single backend Z.AI gateway remains at
   `fb_agent/app/services/agent_llm_gateway.py`; model policy remains in
   `fb_agent/app/config/glm_models.json`.
