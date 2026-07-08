@@ -509,8 +509,16 @@ Active state:
   The reusable classifier/reply logic lives in
   `fb_agent/app/agent_graph/pending_actions.py`; do not add one-off phrase handling
   directly inside thread service.
-  Current typed mutation tools, including `connections.disconnect.v1`, remain
-  mutation-disabled/dry-run unless explicitly changed in a later approved step.
+- `connections.disconnect.v1` is now an approved mutation path: the connection
+  subgraph creates a backend-owned approval envelope, the frontend shows the normal
+  confirmation UI, and `ActionExecutionService` executes the disconnect only after a
+  valid confirm resume with user ownership revalidation. After successful disconnect,
+  backend artifacts return a platform-specific `connection_actions` connect CTA so
+  the same app can be reconnected from chat. Connection CTA cards should also be
+  attached to the assistant message that produced them, so they stay anchored in the
+  original chat position instead of moving below later prompts. Other risky mutation
+  tools remain behind their existing approval/dry-run policies unless explicitly
+  changed.
 - Single backend Z.AI gateway remains at
   `fb_agent/app/services/agent_llm_gateway.py`; model policy remains in
   `fb_agent/app/config/glm_models.json`.
