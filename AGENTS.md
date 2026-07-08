@@ -457,7 +457,7 @@ After each implementation step, re-check:
 
 ## Current Implementation State
 
-Last updated by Codex: 2026-07-07.
+Last updated by Codex: 2026-07-08.
 
 Active state:
 
@@ -478,6 +478,18 @@ Active state:
   approvals.
 - React must not send authoritative message history, generated artifacts, or hidden
   agent/tool state.
+- Backend routing is hybrid:
+  - fast deterministic keyword/rule understanding runs first;
+  - `fb_agent/app/agent_graph/llm_understanding.py` calls the backend Z.AI `main`
+    model only for low-confidence, ambiguous, casual/meta, Roman Urdu-ish, or
+    context-heavy prompts;
+  - LLM understanding returns strict JSON only and never executes tools directly;
+  - deterministic validation remains the safety gate for all tool/subgraph routing.
+- High-confidence operational commands such as token status, connected apps,
+  analytics, and scheduling keywords should stay on the fast deterministic route to
+  avoid unnecessary latency/cost.
+- If LLM understanding fails or returns invalid output, the existing rule router is
+  the fallback. Keep this fallback path tested.
 - Backend thread command handling owns durable draft/caption artifact memory:
   generated copywriting artifacts are stored with user/thread/platform/type metadata,
   reloaded from user-scoped memory, and resolved by backend artifact ID.
@@ -487,6 +499,11 @@ Active state:
   clarification with options instead of guessing.
 - Scheduling and edits must use resolved backend artifact IDs; frontend chat history
   or generated panel payloads are not authoritative context.
+- Draft/caption edits use `fb_agent/app/agent_graph/artifact_editing.py`.
+  Explicit user-added phrases from commands like `Add this line to the Instagram
+  caption: ...` are protected phrases. They must be preserved across future
+  improve/rewrite operations, should not become standalone final lines, and are
+  recovered from thread history if artifact metadata is missing or stale.
 - Pending clarification state is saved in thread working context. The next user answer
   resumes the original intent and must not fall back to the generic help reply.
 - Single backend Z.AI gateway remains at
