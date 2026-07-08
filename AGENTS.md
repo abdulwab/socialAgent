@@ -501,6 +501,11 @@ Active state:
   caption: ...` are protected phrases. They must be preserved across future
   improve/rewrite operations, should not become standalone final lines, and are
   recovered from thread history if artifact metadata is missing or stale.
+- Draft/caption artifacts carry durable metadata: `user_id`, `thread_id`,
+  `created_at`, `updated_at`, `parent_artifact_id`, `revision_number`, and
+  bounded `revision_history`. Edits keep the active artifact ID for UI/scheduling
+  compatibility while preserving prior content in revision history so improve/add
+  operations do not silently lose earlier user-approved text.
 - Pending clarification state is saved in thread working context. The next user answer
   resumes the original intent and must not fall back to the generic help reply.
 - Pending risky tool proposals are saved in thread working context as
