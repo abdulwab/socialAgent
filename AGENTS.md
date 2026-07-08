@@ -478,18 +478,15 @@ Active state:
   approvals.
 - React must not send authoritative message history, generated artifacts, or hidden
   agent/tool state.
-- Backend routing is hybrid:
-  - fast deterministic keyword/rule understanding runs first;
-  - `fb_agent/app/agent_graph/llm_understanding.py` calls the backend Z.AI `main`
-    model only for low-confidence, ambiguous, casual/meta, Roman Urdu-ish, or
-    context-heavy prompts;
+- Backend routing is LLM-first when `LANGGRAPH_LLM_UNDERSTANDING_ENABLED=True`:
+  - every non-empty user command goes through
+    `fb_agent/app/agent_graph/llm_understanding.py` and the backend Z.AI `main`
+    model first;
   - LLM understanding returns strict JSON only and never executes tools directly;
   - deterministic validation remains the safety gate for all tool/subgraph routing.
-- High-confidence operational commands such as token status, connected apps,
-  analytics, and scheduling keywords should stay on the fast deterministic route to
-  avoid unnecessary latency/cost.
 - If LLM understanding fails or returns invalid output, the existing rule router is
-  the fallback. Keep this fallback path tested.
+  the fallback. Keep this fallback path tested. Tests may disable/mock LLM
+  understanding to avoid real provider calls.
 - Backend thread command handling owns durable draft/caption artifact memory:
   generated copywriting artifacts are stored with user/thread/platform/type metadata,
   reloaded from user-scoped memory, and resolved by backend artifact ID.
@@ -506,6 +503,11 @@ Active state:
   recovered from thread history if artifact metadata is missing or stale.
 - Pending clarification state is saved in thread working context. The next user answer
   resumes the original intent and must not fall back to the generic help reply.
+- Pending risky tool proposals are saved in thread working context as
+  `pending_action`. Follow-up questions such as "confirmation kaise doon?", "confirm",
+  or "cancel karo" must use this short-term state instead of generic assistant chat.
+  Current typed mutation tools, including `connections.disconnect.v1`, remain
+  mutation-disabled/dry-run unless explicitly changed in a later approved step.
 - Single backend Z.AI gateway remains at
   `fb_agent/app/services/agent_llm_gateway.py`; model policy remains in
   `fb_agent/app/config/glm_models.json`.
