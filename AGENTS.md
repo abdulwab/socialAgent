@@ -506,6 +506,9 @@ Active state:
 - Pending risky tool proposals are saved in thread working context as
   `pending_action`. Follow-up questions such as "confirmation kaise doon?", "confirm",
   or "cancel karo" must use this short-term state instead of generic assistant chat.
+  The reusable classifier/reply logic lives in
+  `fb_agent/app/agent_graph/pending_actions.py`; do not add one-off phrase handling
+  directly inside thread service.
   Current typed mutation tools, including `connections.disconnect.v1`, remain
   mutation-disabled/dry-run unless explicitly changed in a later approved step.
 - Single backend Z.AI gateway remains at
