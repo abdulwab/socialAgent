@@ -519,6 +519,11 @@ Active state:
   original chat position instead of moving below later prompts. Other risky mutation
   tools remain behind their existing approval/dry-run policies unless explicitly
   changed.
+- Connection verification prompts such as "is LinkedIn disconnected or not?",
+  "verify LinkedIn connection status", or "confirm Facebook is connected" are safe
+  read/status requests. They must route through the Connection Agent status path and
+  DB-owned connection snapshot, not generic assistant chat and not mutation approval.
+  Keep this as semantic intent handling, not one-off hardcoded sentence matching.
 - Single backend Z.AI gateway remains at
   `fb_agent/app/services/agent_llm_gateway.py`; model policy remains in
   `fb_agent/app/config/glm_models.json`.
