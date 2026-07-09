@@ -506,6 +506,11 @@ Active state:
   bounded `revision_history`. Edits keep the active artifact ID for UI/scheduling
   compatibility while preserving prior content in revision history so improve/add
   operations do not silently lose earlier user-approved text.
+- Copywriting structured output must use the Z.AI JSON gateway path. If the provider
+  returns valid JSON that fails schema/platform/count validation, run a schema-repair
+  pass before accepting or falling back. Deterministic fallback drafts are allowed
+  only as a last safety net and must carry `generation_warning`; user-facing chat
+  should not show raw validation errors or credential-shaped invalid output.
 - Pending clarification state is saved in thread working context. The next user answer
   resumes the original intent and must not fall back to the generic help reply.
 - Pending risky tool proposals are saved in thread working context as
