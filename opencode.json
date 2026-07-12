@@ -1,0 +1,299 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "minimax/MiniMax-M3",
+  "enabled_providers": [
+    "minimax"
+  ],
+  "provider": {
+    "minimax": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "MiniMax",
+      "options": {
+        "baseURL": "https://api.minimax.io/v1",
+        "apiKey": "{env:MINIMAX_API_KEY}"
+      },
+      "models": {
+        "MiniMax-M3": {
+          "name": "MiniMax-M3"
+        }
+      }
+    }
+  },
+  "instructions": [
+    ".orchestrated-agents/workflows/bead-protocol.md",
+    ".orchestrated-agents/workflows/sdlc-gates.md",
+    ".orchestrated-agents/workflows/adversarial-convergence.md",
+    ".orchestrated-agents/workflows/human-input.md"
+  ],
+  "permission": {
+    "*": "ask",
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "external_directory": "deny",
+    "todowrite": "deny"
+  },
+  "agent": {
+    "oa-role-selector": {
+      "description": "Debates and selects required roles for a bead before any SDLC work starts.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/role-selector.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git show*": "allow",
+          "git log*": "allow",
+          "rg *": "allow",
+          "where *": "allow",
+          "where.exe *": "allow"
+        }
+      }
+    },
+    "oa-human-question-framer": {
+      "description": "Frames human input only when role debate cannot converge without a decision.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/human-question-framer.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "rg *": "allow"
+        }
+      }
+    },
+    "oa-maker-engineer": {
+      "description": "Implements approved scoped changes after role selection and SDLC gating.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/maker-engineer.md}",
+      "permission": {
+        "edit": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          ".env": "deny",
+          ".env.*": "deny",
+          ".env.example": "allow"
+        },
+        "bash": {
+          "*": "allow",
+          "git push*": "deny",
+          "git commit*": "deny",
+          "git reset --hard*": "deny",
+          "git checkout -- *": "deny",
+          "git clean -fd*": "deny",
+          "rm -rf *": "deny",
+          "del *": "ask",
+          "Remove-Item *": "ask",
+          "alembic upgrade*": "deny",
+          "alembic * upgrade*": "deny",
+          "docker push*": "deny",
+          "npm publish*": "deny",
+          "scp *": "deny"
+        }
+      }
+    },
+    "oa-adversarial-reviewer": {
+      "description": "Adversarially reviews implementation and comments findings without editing files.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/adversarial-reviewer.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git show*": "allow",
+          "git log*": "allow",
+          "rg *": "allow",
+          "npm run lint*": "allow",
+          "npm test*": "allow",
+          "pytest*": "allow"
+        }
+      }
+    },
+    "oa-qa-strategist": {
+      "description": "Designs and audits test evidence, acceptance coverage, and regression risk.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/qa-strategist.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "rg *": "allow",
+          "npm run lint*": "allow",
+          "npm run build*": "allow",
+          "npm test*": "allow",
+          "pytest*": "allow"
+        }
+      }
+    },
+    "oa-security-privacy-reviewer": {
+      "description": "Reviews security, privacy, authorization, secrets, and abuse cases.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/security-privacy-reviewer.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "rg *": "allow",
+          "npm run lint*": "allow",
+          "npm test*": "allow",
+          "pytest*": "allow",
+          "gitleaks*": "allow",
+          "gitleaks.cmd *": "allow",
+          "gitleaks.exe *": "allow",
+          "trufflehog*": "allow",
+          "trufflehog.cmd *": "allow",
+          "trufflehog.exe *": "allow"
+        }
+      }
+    },
+    "oa-release-sre-reviewer": {
+      "description": "Reviews reliability, operability, rollout, rollback, observability, and release risk.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/release-sre-reviewer.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "rg *": "allow"
+        }
+      }
+    },
+    "oa-documentation-reviewer": {
+      "description": "Reviews documentation completeness, accuracy, and user-facing clarity.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/documentation-reviewer.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "rg *": "allow"
+        }
+      }
+    },
+    "oa-workflow-scout": {
+      "description": "Detects process flaws and creates workflow-improvement beads.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/workflow-scout.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "rg *": "allow"
+        }
+      }
+    },
+    "oa-process-engineer": {
+      "description": "Implements approved workflow improvements in .orchestrated-agents only.",
+      "mode": "primary",
+      "model": "minimax/MiniMax-M3",
+      "prompt": "{file:.orchestrated-agents/roles/process-engineer.md}",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          ".orchestrated-agents/**": "allow",
+          "opencode.json": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          ".env": "deny",
+          ".env.*": "deny"
+        },
+        "bash": {
+          "*": "ask",
+          "git push*": "deny",
+          "git reset --hard*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "rg *": "allow",
+          "npm run lint*": "allow",
+          "npm test*": "allow",
+          "pytest*": "allow",
+          "powershell -NoProfile -File .orchestrated-agents/bin/oa.ps1 status*": "allow",
+          "powershell -NoProfile -Command*oa.ps1 status*": "allow"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "socialhub",
+  "project_id": "db69786c-b84f-4f33-aa9d-c8115f8959b1"
+}
