@@ -20,3 +20,4 @@
 {"id":"int-0509c8fa","kind":"field_change","created_at":"2026-07-12T23:32:57.7752137Z","actor":"Process Engineer","issue_id":"socialhub-v8g.22.1","extra":{"field":"assignee","new_value":"Process Engineer","old_value":"QA Strategist"}}
 {"id":"int-74e5bc86","kind":"field_change","created_at":"2026-07-12T23:44:34.8912502Z","actor":"Adversarial Reviewer","issue_id":"socialhub-v8g.22.1","extra":{"field":"assignee","new_value":"Adversarial Reviewer","old_value":"Process Engineer"}}
 {"id":"int-99b70d51","kind":"field_change","created_at":"2026-07-12T23:55:31.2424752Z","actor":"QA Strategist","issue_id":"socialhub-v8g.22.1","extra":{"field":"assignee","new_value":"QA Strategist","old_value":"Adversarial Reviewer"}}
+{"id":"int-a4e2e9e4","kind":"field_change","created_at":"2026-07-13T00:03:15.8278593Z","actor":"Security Privacy Reviewer","issue_id":"socialhub-v8g.22.1","extra":{"field":"assignee","new_value":"Security Privacy Reviewer","old_value":"QA Strategist"}}
