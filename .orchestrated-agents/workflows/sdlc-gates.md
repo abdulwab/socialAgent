@@ -27,7 +27,7 @@ Every bead must tailor these gates to its stage. A gate can be marked **Applicab
 
 ## Required Output
 
-Role Selector or SDLC Process Architect must comment a lifecycle matrix before Maker Engineer starts implementation.
+Role Selector must comment a lifecycle matrix before Maker Engineer starts implementation. (The "SDLC Process Architect" is a debate perspective the Role Selector simulates, not a separate role.)
 
 For each gate:
 

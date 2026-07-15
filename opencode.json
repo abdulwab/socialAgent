@@ -1,10 +1,24 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "minimax/MiniMax-M3",
+  "model": "zai/glm-5.2",
   "enabled_providers": [
+    "zai",
     "minimax"
   ],
   "provider": {
+    "zai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Z.AI Coding Plan",
+      "options": {
+        "baseURL": "https://api.z.ai/api/coding/paas/v4",
+        "apiKey": "{env:ZAI_API_KEY}"
+      },
+      "models": {
+        "glm-5.2": {
+          "name": "GLM-5.2"
+        }
+      }
+    },
     "minimax": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "MiniMax",
@@ -40,7 +54,7 @@
     "oa-role-selector": {
       "description": "Debates and selects required roles for a bead before any SDLC work starts.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/role-selector.md}",
       "permission": {
         "edit": "deny",
@@ -52,6 +66,7 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "git show*": "allow",
@@ -65,7 +80,7 @@
     "oa-human-question-framer": {
       "description": "Frames human input only when role debate cannot converge without a decision.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/human-question-framer.md}",
       "permission": {
         "edit": "deny",
@@ -77,7 +92,82 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
+          "rg *": "allow"
+        }
+      }
+    },
+    "oa-researcher": {
+      "description": "Gathers authoritative evidence from repository files, official docs, standards, specs, and source code.",
+      "mode": "primary",
+      "model": "zai/glm-5.2",
+      "prompt": "{file:.orchestrated-agents/roles/researcher.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git show*": "allow",
+          "git log*": "allow",
+          "rg *": "allow",
+          "where *": "allow",
+          "where.exe *": "allow"
+        }
+      }
+    },
+    "oa-planner": {
+      "description": "Turns bead context and research into an execution plan, SDLC gate map, and role handoff sequence.",
+      "mode": "primary",
+      "model": "zai/glm-5.2",
+      "prompt": "{file:.orchestrated-agents/roles/planner.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git show*": "allow",
+          "git log*": "allow",
+          "rg *": "allow"
+        }
+      }
+    },
+    "oa-architect": {
+      "description": "Evaluates architecture options, boundaries, interfaces, data flow, reliability, security, and tradeoffs.",
+      "mode": "primary",
+      "model": "zai/glm-5.2",
+      "prompt": "{file:.orchestrated-agents/roles/architect.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "bd *": "allow",
+          "bd.cmd *": "allow",
+          "bd.exe *": "allow",
+          "bd **": "allow",
+          "bd.cmd **": "allow",
+          "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git show*": "allow",
+          "git log*": "allow",
           "rg *": "allow"
         }
       }
@@ -85,7 +175,7 @@
     "oa-maker-engineer": {
       "description": "Implements approved scoped changes after role selection and SDLC gating.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/maker-engineer.md}",
       "permission": {
         "edit": {
@@ -117,7 +207,7 @@
     "oa-adversarial-reviewer": {
       "description": "Adversarially reviews implementation and comments findings without editing files.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/adversarial-reviewer.md}",
       "permission": {
         "edit": "deny",
@@ -129,6 +219,7 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "git show*": "allow",
@@ -143,7 +234,7 @@
     "oa-qa-strategist": {
       "description": "Designs and audits test evidence, acceptance coverage, and regression risk.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/qa-strategist.md}",
       "permission": {
         "edit": "deny",
@@ -155,6 +246,7 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "rg *": "allow",
@@ -168,7 +260,7 @@
     "oa-security-privacy-reviewer": {
       "description": "Reviews security, privacy, authorization, secrets, and abuse cases.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/security-privacy-reviewer.md}",
       "permission": {
         "edit": "deny",
@@ -180,6 +272,7 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "rg *": "allow",
@@ -198,7 +291,7 @@
     "oa-release-sre-reviewer": {
       "description": "Reviews reliability, operability, rollout, rollback, observability, and release risk.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/release-sre-reviewer.md}",
       "permission": {
         "edit": "deny",
@@ -210,6 +303,7 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "rg *": "allow"
@@ -219,7 +313,7 @@
     "oa-documentation-reviewer": {
       "description": "Reviews documentation completeness, accuracy, and user-facing clarity.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/documentation-reviewer.md}",
       "permission": {
         "edit": "deny",
@@ -231,6 +325,7 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "rg *": "allow"
@@ -240,7 +335,7 @@
     "oa-workflow-scout": {
       "description": "Detects process flaws and creates workflow-improvement beads.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
+      "model": "zai/glm-5.2",
       "prompt": "{file:.orchestrated-agents/roles/workflow-scout.md}",
       "permission": {
         "edit": "deny",
@@ -252,17 +347,18 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "rg *": "allow"
         }
       }
     },
-    "oa-process-engineer": {
+    "oa-workflow-engineer": {
       "description": "Implements approved workflow improvements in .orchestrated-agents only.",
       "mode": "primary",
-      "model": "minimax/MiniMax-M3",
-      "prompt": "{file:.orchestrated-agents/roles/process-engineer.md}",
+      "model": "zai/glm-5.2",
+      "prompt": "{file:.orchestrated-agents/roles/workflow-engineer.md}",
       "permission": {
         "edit": {
           "*": "deny",
@@ -283,6 +379,7 @@
           "bd **": "allow",
           "bd.cmd **": "allow",
           "bd.exe **": "allow",
+          "*test-comment-check*": "allow",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",

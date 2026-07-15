@@ -1,4 +1,4 @@
-# Sub-repos — inke changes yahan track/push nahi honge
+# Sub-repos - inke changes yahan track/push nahi honge
 fb_agent/
 fb_dash/
 
@@ -9,3 +9,15 @@ __pycache__/
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+
+# Orchestrated Agents local runtime
+.orchestrated-agents/state/
+.orchestrated-agents/logs/
+.orchestrated-agents/tmp/
+.orchestrated-agents/secrets/

@@ -12,7 +12,7 @@
 | --- | --- | --- | --- |
 | <Role> | <why needed> | <Maker / Adversary / Meta> | <yes/no> |
 
-Use `Meta` for governance roles that do not make or critique files (Role Selector, Human Question Framer, Workflow Scout). Use `Maker` for Process Engineer or Maker Engineer. Use `Adversary` for review-only roles (Adversarial Reviewer, QA Strategist, Security Privacy Reviewer, Release SRE Reviewer, Documentation Reviewer).
+Use `Meta` for governance roles that do not make or critique files (Role Selector, Human Question Framer, Workflow Scout). Use `Maker` for Workflow Engineer or Maker Engineer. Use `Adversary` for review-only roles (Adversarial Reviewer, QA Strategist, Security Privacy Reviewer, Release SRE Reviewer, Documentation Reviewer).
 
 **SDLC Gate Coverage:**
 
