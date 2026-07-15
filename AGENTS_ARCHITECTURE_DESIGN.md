@@ -17,6 +17,13 @@
 > `assistant-ui` primitives and typed SSE.
 > Step execution and test evidence follow
 > `implementation-plan/NEXLAB_LANGGRAPH_TEST_GATED_EXECUTION_CHECKLIST.md`.
+>
+> **2026-07-15 platform-agent decision:** The next refactor moves the hidden
+> product agents toward platform-specific LangGraph agents: Facebook, Instagram,
+> LinkedIn, and X. Main Agent understands intent and routes through a small typed
+> route contract; it must not receive platform tool argument schemas. Platform agents
+> receive only their own tools plus explicitly granted shared system tools. See
+> `implementation-plan/NEXLAB_LANGGRAPH_PLATFORM_AGENT_ARCHITECTURE_PLAN.md`.
 | Version | 1.0 |
 | Last Updated | 2026-06-22 |
 | Status | Planning / Architecture Design |
