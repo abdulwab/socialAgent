@@ -2,7 +2,7 @@
 
 | Item | Decision |
 |---|---|
-| Status | Gates A-F implemented; Gate G cleanup manifest active |
+| Status | Gates A-I closed; next platform expansion ready |
 | Visible agent | Main Agent only |
 | Hidden agents | Facebook, Instagram, LinkedIn, and X platform agents |
 | Tool schema visibility | Platform agents only; Main Agent receives route schemas only |
@@ -234,6 +234,25 @@ Approval envelope requirements:
 - Keep services, model policy, OAuth, database models, migrations, and audit readers.
 - Run targeted tests, full backend tests, frontend lint/build/test, and `git diff --check`.
 - Gate G manifest: `fb_agent/docs/PLATFORM_AGENT_DELETION_MANIFEST.md`.
+
+### Gate H: Facebook Connect Intent Handoff
+
+- Ensure Facebook connect commands such as `connect Facebook`, `let's connect Facebook`,
+  and `letsconnect with facebook` route to the connection subgraph.
+- Return safe `connection_actions` for the frontend instead of generic assistant chat.
+- Add regression coverage so LLM understanding cannot downgrade deterministic connect
+  intent to a generic greeting.
+
+### Gate I: Facebook Connect/Publish Flow
+
+- Completed Bead: `socialhub-w0u`.
+- Render backend `connection_actions` in the `/agent` frontend.
+- Start the existing safe Facebook OAuth handoff from the Connect Facebook action.
+- Use connected Facebook page/account context when routing publish commands.
+- Route Facebook publish requests through the hidden Facebook platform agent and map
+  them to `publish.execute.v1` confirmation.
+- Execute confirmed publish through the existing ownership, idempotency, and audit
+  boundary.
 
 ## 11. Initial Cleanup Candidates
 
