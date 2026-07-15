@@ -530,77 +530,37 @@ Fields:
 
 ## 11. Agent Backend Design
 
-Backend mein agents ko service classes ke form mein banaya jayega.
-
-Example structure:
+Backend agents are now LangGraph nodes/subgraphs under:
 
 ```txt
-fb_agent/app/agents/
-  orchestrator.py
-  base.py
-  registry.py
-  schemas.py
-  memory.py
-  state_store.py
-  connection_agent.py
-  content_strategy_agent.py
-  copywriting_agent.py
-  image_generation_agent.py
-  media_agent.py
-  scheduling_agent.py
-  publishing_agent.py
-  analytics_agent.py
-  autopilot_agent.py
-  safety_review_agent.py
-  web_search_agent.py
+fb_agent/app/agent_graph/
 ```
 
-### Base Agent Interface
+The old class-based `fb_agent/app/agents/` runtime and agent-tool registry were removed
+after the LangGraph-only cutover. New platform work must extend the LangGraph runtime,
+not recreate service-class agents.
 
-Each hidden agent same interface follow karega:
+Current platform-agent shape:
 
-```python
-class BaseAgent:
-    agent_key: str
-
-    async def execute(self, request: AgentRequest) -> AgentResponse:
-        raise NotImplementedError
+```txt
+Main Agent graph
+  -> typed route decision
+  -> hidden Facebook / Instagram / LinkedIn / X platform subgraph
+  -> platform-owned structured tools
+  -> shared support nodes only through explicit grants
+  -> confirmation and exactly-once execution boundary for risky actions
 ```
 
-Optional methods:
+Important implementation boundaries:
 
-```python
-async def validate_input(self, request: AgentRequest) -> list[str]:
-    ...
-
-async def plan(self, request: AgentRequest) -> AgentPlan:
-    ...
-
-async def summarize_result(self, response: AgentResponse) -> str:
-    ...
-```
-
-### Agent Registry
-
-Registry agent lookup handle karegi:
-
-```python
-AGENT_REGISTRY = {
-    "connection": ConnectionAgent,
-    "content_strategy": ContentStrategyAgent,
-    "copywriting": CopywritingAgent,
-    "image_generation": ImageGenerationAgent,
-    "media": MediaAgent,
-    "scheduling": SchedulingAgent,
-    "publishing": PublishingAgent,
-    "analytics": AnalyticsAgent,
-    "autopilot": AutopilotAgent,
-    "safety_review": SafetyReviewAgent,
-    "web_search": WebSearchAgent,
-}
-```
-
-Main Agent registry se required agent call karega.
+- Main Agent can see route schemas only; it must not receive platform tool argument
+  schemas.
+- Platform agents receive only their own `facebook.*`, `instagram.*`, `linkedin.*`, or
+  `x.*` tools plus explicitly granted shared tools.
+- Domain-named subgraphs that remain in `app/agent_graph/` are shared support nodes
+  unless a live-reference audit proves they are unreachable.
+- Services, OAuth, Z.AI gateway, model policy, database models, migrations, and audit
+  readers remain outside the deletion boundary.
 
 ---
 

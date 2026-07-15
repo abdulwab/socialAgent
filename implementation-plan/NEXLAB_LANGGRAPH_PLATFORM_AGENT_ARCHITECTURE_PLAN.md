@@ -2,7 +2,7 @@
 
 | Item | Decision |
 |---|---|
-| Status | User-selected direction for the next LangGraph refactor |
+| Status | Gates A-F implemented; Gate G cleanup manifest active |
 | Visible agent | Main Agent only |
 | Hidden agents | Facebook, Instagram, LinkedIn, and X platform agents |
 | Tool schema visibility | Platform agents only; Main Agent receives route schemas only |
@@ -11,7 +11,7 @@
 
 ## 1. Objective
 
-Refactor the current domain-first LangGraph implementation into a platform-agent
+Refactor the existing LangGraph implementation into a platform-agent
 architecture:
 
 ```text
@@ -233,6 +233,7 @@ Approval envelope requirements:
 - Delete only files whose behavior has passing platform-agent replacements.
 - Keep services, model policy, OAuth, database models, migrations, and audit readers.
 - Run targeted tests, full backend tests, frontend lint/build/test, and `git diff --check`.
+- Gate G manifest: `fb_agent/docs/PLATFORM_AGENT_DELETION_MANIFEST.md`.
 
 ## 11. Initial Cleanup Candidates
 
