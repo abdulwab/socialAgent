@@ -274,3 +274,44 @@ rg -n -i "gemini|openrouter|claude|systemPrompt|activeAiProvider" fb_dash/app fb
 rg -n "slice\(-8\)|conversation|artifacts|thread_id|EventSource" fb_dash/app/agent fb_dash/lib
 ```
 
+## Gate L Platform-Agent Cleanup Summary
+
+Audit date: 2026-07-16
+
+Final cleanup bead:
+
+- `socialhub-iw5.11.5`
+
+Removed or retired legacy surfaces:
+
+- `PLATFORM_TOOL_SPECS`
+- old per-platform platform-agent argument schema classes such as `FacebookCreatePostInput`, `InstagramCreateCaptionInput`, `LinkedInCreateDraftInput`, and `XCreatePostInput`
+- legacy `platform_tool_specs`, `tool_schemas_for_platform_agent`, `build_platform_structured_tools`, and `build_platform_tool_node`
+- static per-platform shell `ToolNode` assumptions
+- `PlatformToolNodeView` and `build_platform_alias_node`
+- `SHARED_SYSTEM_TOOL_GRANTS`, `SharedSystemToolGrant`, and `SharedToolRisk`
+
+Current retained compatibility shims:
+
+- `app/agent_graph/platform_agents/tools.py` keeps explicit legacy platform alias names such as `facebook.create_post.v1` and `instagram.create_caption.v1`. These aliases are registry-backed and map to canonical capability names such as `post.publish.v1`, `post.schedule.v1`, `comment.reply.v1`, `content.adapt.v1`, and `artifact.delete.v1`.
+- `app/agent_graph/platform_agents/shared_tools.py` keeps handler adapters and handler-local validation models for shared read/media helpers. Visibility is no longer owned there; it is selected through `app/agent_graph/capabilities/visibility.py`.
+- `PlatformRouteDecision.task` remains a small compatibility route shape for hidden platform-agent dispatch. Its canonical capability is generated from the capability registry.
+
+Removal criteria for retained shims:
+
+- Remove legacy alias names after Main Agent routing, confirmation envelopes, stored artifacts, tests, and frontend-visible debug payloads consistently use canonical capability names end to end.
+- Remove platform-agent compatibility route fields after platform-agent dispatch accepts canonical `CapabilityRouteDecision` directly.
+- Fold shared handler adapter schemas into canonical capability tool schemas only after handlers themselves are moved into the capability modules.
+
+Final audit verification:
+
+```powershell
+rg -n "PLATFORM_TOOL_SPECS|platform_tool_specs|build_platform_structured_tools|build_platform_tool_node|SHARED_SYSTEM_TOOL_GRANTS|SharedSystemToolGrant|SharedToolRisk|ToolNode|PlatformToolNodeView|build_platform_alias_node" fb_agent/app fb_agent/tests
+cd fb_agent
+python -m pytest -q --tb=short
+```
+
+Expected result:
+
+- legacy names appear only in audit tests that assert they are not exported
+- full backend suite passes
