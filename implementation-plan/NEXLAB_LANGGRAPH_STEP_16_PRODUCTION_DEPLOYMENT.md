@@ -241,3 +241,22 @@ Production state:
 Automated gates: backend `255 passed, 1 skipped`; frontend lint/build and `14/14`
 tests. Manual logged-in responsive and lifecycle acceptance remains required before
 Step 16 can be marked PASS.
+
+### Generated command-routing deployment
+
+Backend commit `79e965a` was deployed by the approved SCP archive plus server-side
+Docker build workflow. The backend repository was not pushed to GitHub.
+
+- image: `socialhub-backend:command-routing-79e965a`;
+- rollback image: `socialhub-backend:rollback-pre-command-routing-79e965a`;
+- previous live image: `socialhub-backend:090a9a5`;
+- local backend regression before deployment: `423 passed, 1 skipped`;
+- production `/health`: passing internally and publicly;
+- OpenAPI exposes thread command, stream, resume, and thread list paths;
+- unauthenticated thread list request returns `401`;
+- container `socialhub-api` is running with restart count `0`.
+
+This release hardens generated command handling: stale per-turn platform routing
+context is cleared, clarification resumes are selective, open/retrieve content
+commands use read-only retrieval, and weekday/evening/relative schedule phrases parse
+deterministically.
