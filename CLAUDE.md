@@ -27,11 +27,26 @@ approved for removal; do not reintroduce compatibility command/confirm adapters.
 
 ## Repository Boundaries
 
-- Root: instructions, architecture, plans, coding-agent memory
-- `fb_dash/`: frontend nested repository
-- `fb_agent/`: backend nested repository
+- Root (`socialAgent/`): instructions, architecture, plans, and the canonical Beads database
+- `socialUI/`: frontend nested repository (own remote)
+- `socialbackend/`: backend nested repository (own remote)
 
-A root commit does not include nested repositories.
+These are three independent git repositories. A root commit does not include nested
+repositories.
+
+### Beads discovery across the nested repositories
+
+SocialHub uses ONE root Beads database at `<repo-root>/.beads`. `bd` finds it by walking
+up, but the walk stops at a nested `.git` boundary, so `bd` fails inside `socialUI/` and
+`socialbackend/` unless you help it:
+
+- Claude Code: `BEADS_DIR` is set in `.claude/settings.local.json` (machine-local, never
+  committed — the path is absolute).
+- Any other shell or agent: `export BEADS_DIR=<repo-root>/.beads`, or run
+  `bd -C <repo-root> <command>`.
+
+Never initialize another `.beads/` database inside a nested repository. One product =
+one Beads database = one cross-repository dependency graph.
 
 ## User Isolation
 
@@ -54,9 +69,9 @@ secrets, deployment, and final legacy deletion require explicit approval.
 ## Backend
 
 - FastAPI, SQLAlchemy, Alembic, PostgreSQL, APScheduler
-- authoritative runtime: `fb_agent/app/agent_graph/`
-- LLM gateway: `fb_agent/app/services/agent_llm_gateway.py`
-- model policy: `fb_agent/app/config/glm_models.json`
+- authoritative runtime: `socialbackend/app/agent_graph/`
+- LLM gateway: `socialbackend/app/services/agent_llm_gateway.py`
+- model policy: `socialbackend/app/config/glm_models.json`
 - API prefix: `/api/v1/`; health: `/health`
 
 Backend changes are never pushed to GitHub. Production uses approved SCP transfer and
@@ -66,8 +81,8 @@ Docker rebuild with container `socialhub-api` and
 ## Frontend
 
 - Next.js 16, React 19, TypeScript, Tailwind 4, Redux Toolkit, Clerk
-- primary UI: `fb_dash/app/agent/`
-- API client: `fb_dash/lib/apiManager.ts`
+- primary UI: `socialUI/app/agent/`
+- API client: `socialUI/lib/apiManager.ts`
 - API base: `/api/proxy/api/v1`
 
 The backend is authoritative for threads, history, artifacts, memories, and
@@ -75,12 +90,12 @@ confirmations. React must not send authoritative conversation/artifact context.
 
 ## Verification
 
-```powershell
-cd fb_agent
-$env:DATABASE_URL="sqlite:///./test_local.db"
-pytest
+```bash
+# Backend — requires Python 3.11 (see socialbackend/docs/VERIFICATION_ENVIRONMENT.md)
+cd socialbackend
+DATABASE_URL="sqlite:///./test_local.db" python -m pytest
 
-cd ..\fb_dash
+cd ../socialUI
 npm run lint
 npm run build
 npm test

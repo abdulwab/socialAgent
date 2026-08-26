@@ -1,6 +1,7 @@
 # Sub-repos - inke changes yahan track/push nahi honge
-fb_agent/
-fb_dash/
+# (renamed: fb_agent -> socialbackend, fb_dash -> socialUI)
+socialbackend/
+socialUI/
 
 # Common ignores
 .env
@@ -21,3 +22,6 @@ Thumbs.db
 .orchestrated-agents/logs/
 .orchestrated-agents/tmp/
 .orchestrated-agents/secrets/
+
+# Claude Code machine-local settings (contains absolute BEADS_DIR)
+.claude/settings.local.json
