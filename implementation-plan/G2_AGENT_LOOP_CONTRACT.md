@@ -90,9 +90,31 @@ An iteration that does none of these is a defect. It is detectable: compare the
 multiset of `(task_id, status, attempts)` before and after — unchanged means no
 progress, and the loop must terminate with `failed` rather than continue.
 
-**Bounded by construction.** Let `T` = number of tasks, `R` = max attempts per
-task. Every iteration either terminates a task, consumes an attempt, or suspends.
-So iterations are bounded by `T × R + 1`, independent of what the model says.
+**Bounded by construction**, and the bound has ONE definition:
+
+```python
+from app.agent_graph.task_progress import max_iterations
+budget = max_iterations(plan)
+```
+
+The runtime calls that function. It does not restate the formula, because a
+duplicated bound drifts from the state machine it is supposed to describe — which
+is precisely what happened here.
+
+*The correction (socialhub-ijn.6.11).* This document originally said `T × R + 1`
+for `T` tasks and `R` attempts, reasoning that every iteration either terminates a
+task, consumes an attempt, or suspends. **That is wrong for any task that blocks
+on an interaction.** Blocking and resuming are two further iterations that
+terminate nothing and consume no attempt — the suspend is legitimate progress, and
+the resume is legitimate progress, and neither shows up in `T × R`. A loop
+configured with `T × R + 1` would therefore abort a plan that used an interaction,
+which is every plan containing a consequential capability. The bound was not
+merely tight; it was smaller than the shortest legal execution.
+
+`max_iterations()` carries the derivation in its docstring and allows three
+iterations per attempt — start, block, resume — plus one terminal step per task
+and one final iteration to observe that the plan is finished. A test asserts the
+derived bound exceeds `T × R + 1`, so the two cannot silently converge again.
 
 Additional ceilings, already present in `budgets.py`: node steps, LLM calls, tool
 calls, total tokens, recursion limit. Whichever binds first wins.
